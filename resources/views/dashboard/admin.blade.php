@@ -1,12 +1,29 @@
-<div class="space-y-4">
-    <h3 class="text-lg font-semibold">Admin</h3>
-    <p class="text-sm text-gray-600 dark:text-gray-300">Hello, Admin!</p>
-    <ul class="list-disc ms-5 text-sm">
-        <li>Manage Units</li>
-        <li>View Leases</li>
-        <li>Review Payments and Fees</li>
-        <li>Edit Profile</li>
-    </ul>
+<div x-data class="space-y-6">
+    <h3 class="text-lg font-semibold">Admin Overview</h3>
+    <p class="text-sm text-gray-600 dark:text-gray-300">Quick actions open modals; fields match DB columns.</p>
+
+    <div class="flex items-center gap-4 text-sm">
+        <a role="button" @click="$store.ui.showPayment = true" class="inline-flex items-center gap-1 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            <span>Add Payment</span>
+        </a>
+        <span class="h-4 w-px bg-gray-300 dark:bg-gray-700"></span>
+        <a role="button" @click="$store.ui.showUnit = true" class="inline-flex items-center gap-1 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"/></svg>
+            <span>Add Unit</span>
+        </a>
+        <span class="h-4 w-px bg-gray-300 dark:bg-gray-700"></span>
+        <a role="button" @click="$store.ui.showTenantAssign = true" class="inline-flex items-center gap-1 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm-9 9a9 9 0 1 1 18 0Z"/></svg>
+            <span>Add Tenant & Assign</span>
+        </a>
+    </div>
+  
+    @include('dashboard.partials.payments-list')
+    @include('dashboard.partials.units-list')
+    @include('dashboard.partials.tenants-list')
+
+    @include('dashboard.modals.add-payment')
+    @include('dashboard.modals.add-unit')
+    @include('dashboard.modals.add-tenant-assign')
 </div>
-
-
