@@ -1,6 +1,5 @@
 <div x-data class="space-y-6">
-    <h3 class="text-lg font-semibold">Admin Overview</h3>
-    <p class="text-sm text-gray-600 dark:text-gray-300">Quick actions open modals; fields match DB columns.</p>
+    @include('dashboard.partials.stats-overview')
 
     <div class="flex items-center gap-4 text-sm">
         <a role="button" @click="$store.ui.showPayment = true" class="inline-flex items-center gap-1 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400">
