@@ -45,4 +45,15 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // Relationships
+    public function tenant()
+    {
+        return $this->hasOne(\App\Models\Tenant::class);
+    }
+
+    public function adminUnits()
+    {
+        return $this->hasMany(\App\Models\Unit::class, 'admin_id');
+    }
 }
