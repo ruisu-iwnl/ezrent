@@ -59,9 +59,8 @@
                             <x-dropdown-link :href="route('login')">
                                 {{ __('Log in') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="route('register')">
-                                {{ __('Register') }}
-                            </x-dropdown-link>
+                            {{-- Registration disabled --}}
+                            {{-- <x-dropdown-link :href="route('register')">{{ __('Register') }}</x-dropdown-link> --}}
                         @endauth
                     </x-slot>
                 </x-dropdown>
@@ -118,9 +117,8 @@
                     <x-responsive-nav-link :href="route('login')">
                         {{ __('Log in') }}
                     </x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('register')">
-                        {{ __('Register') }}
-                    </x-responsive-nav-link>
+                    {{-- Registration disabled --}}
+                    {{-- <x-responsive-nav-link :href="route('register')">{{ __('Register') }}</x-responsive-nav-link> --}}
                 @endauth
             </div>
         </div>
