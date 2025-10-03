@@ -18,6 +18,7 @@ return new class extends Migration
             $table->dateTime('paid_at');
             $table->string('method')->nullable();
             $table->string('reference')->nullable();
+            $table->string('receipt_path')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
         });
