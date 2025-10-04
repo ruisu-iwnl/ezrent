@@ -1,11 +1,27 @@
-<div id="payments-table" class="bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700 rounded-lg" data-test-date="{{ $testDate ? $testDate->format('Y-m-d') : '' }}" data-this-month-count="{{ $payments->filter(function($payment) use ($testDate) { $referenceDate = $testDate ?: now(); return $payment->paid_at->year === $referenceDate->year && $payment->paid_at->month === $referenceDate->month; })->count() }}">
+@php
+    $selectedMonth = request('month_filter');
+
+    if (!$selectedMonth) {
+        $defaultMonth = collect($availableMonths)->firstWhere('selected', true);
+        $selectedMonth = $defaultMonth ? $defaultMonth['value'] : null;
+    }
+    
+    $filteredPayments = $payments;
+    if ($selectedMonth) {
+        $filteredPayments = $payments->filter(function($payment) use ($selectedMonth) {
+            return $payment->paid_at->format('Y-m') === $selectedMonth;
+        });
+    }
+@endphp
+
+<div id="payments-table" class="bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700 rounded-lg" data-test-date="{{ $testDate ? $testDate->format('Y-m-d') : '' }}" data-this-month-count="{{ $filteredPayments->count() }}">
     <div class="px-4 py-3 border-b border-gray-200/60 dark:border-gray-700 flex items-center justify-between">
         <div class="flex items-center gap-4">
             <h4 class="font-medium">Payments Management</h4>
             <div class="flex items-center gap-2 text-xs text-gray-500">
                 <span>Total: <span class="font-medium">{{ $payments->count() }}</span></span>
                 <span>•</span>
-                <span>This Month: <span class="font-medium text-green-600">{{ $payments->filter(function($payment) use ($testDate) { $referenceDate = $testDate ?: now(); return $payment->paid_at->year === $referenceDate->year && $payment->paid_at->month === $referenceDate->month; })->count() }}</span></span>
+                <span>This Month: <span class="font-medium text-green-600">{{ $filteredPayments->count() }}</span></span>
                 <span>•</span>
                 <span>Cash: <span class="font-medium text-green-600">{{ $payments->where('method', 'cash')->count() }}</span></span>
                 <span>•</span>
@@ -45,21 +61,6 @@
                 </tr>
             </thead>
             <tbody>
-                @php
-                    $selectedMonth = request('month_filter');
-
-                    if (!$selectedMonth) {
-                        $defaultMonth = collect($availableMonths)->firstWhere('selected', true);
-                        $selectedMonth = $defaultMonth ? $defaultMonth['value'] : null;
-                    }
-                    
-                    $filteredPayments = $payments;
-                    if ($selectedMonth) {
-                        $filteredPayments = $payments->filter(function($payment) use ($selectedMonth) {
-                            return $payment->paid_at->format('Y-m') === $selectedMonth;
-                        });
-                    }
-                @endphp
                 @forelse($filteredPayments as $payment)
                 <tr x-data="{ payment: { id: {{ $payment->id }}, amount: {{ $payment->amount }}, method: '{{ $payment->method }}', reference: '{{ $payment->reference }}', notes: '{{ $payment->notes }}' }, editing: false }" 
                     class="border-t border-gray-200/60 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50"
