@@ -24,7 +24,7 @@
                         @enderror
                     </div>
                     <div>
-                        <input name="tenant[phone]" type="text" class="w-full rounded-md border-gray-300 dark:bg-gray-900 dark:border-gray-700 @error('tenant.phone') border-red-500 @enderror" placeholder="Phone (optional)" value="{{ old('tenant.phone') }}">
+                        <input name="tenant[phone]" type="number" class="w-full rounded-md border-gray-300 dark:bg-gray-900 dark:border-gray-700 @error('tenant.phone') border-red-500 @enderror" placeholder="Phone (optional)" value="{{ old('tenant.phone') }}">
                         @error('tenant.phone')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror

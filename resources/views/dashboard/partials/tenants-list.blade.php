@@ -49,7 +49,7 @@
                     <td class="px-4 py-3 text-gray-600 dark:text-gray-400">{{ $tenant->user->email }}</td>
                     <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
                         <div x-show="!editing" @click="startEditingTenant(tenant.id); editing = true" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400">{{ $tenant->phone ?? 'Click to add phone' }}</div>
-                        <input x-show="editing" x-cloak x-model="tenant.phone" type="text" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" placeholder="Phone number" @click.stop>
+                        <input x-show="editing" x-cloak x-model="tenant.phone" type="number" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" placeholder="Phone number" @click.stop>
                     </td>
                     <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
                         <div x-show="!editing" @click="startEditingTenant(tenant.id); editing = true" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400">{{ $tenant->address ?? 'Click to add address' }}</div>
