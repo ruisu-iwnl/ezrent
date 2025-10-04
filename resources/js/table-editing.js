@@ -10,7 +10,10 @@ export function initializeTableEditing(config) {
         duplicateMessage = 'This value already exists. Please choose a different one.'
     } = config;
 
-    window.saveCurrentRecord = function() {
+    const saveFunctionName = `saveCurrent${tableName.charAt(0).toUpperCase() + tableName.slice(1)}`;
+    const cancelFunctionName = `cancel${tableName.charAt(0).toUpperCase() + tableName.slice(1)}Editing`;
+
+    window[saveFunctionName] = function() {
         const store = Alpine.store('ui');
         if (!store.editingRowId) {
             alert(`No ${tableName} selected for editing`);
@@ -51,7 +54,7 @@ export function initializeTableEditing(config) {
         submitForm(recordData[dataProperty], updateRoute, idField);
     };
 
-    window.cancelEditing = function() {
+    window[cancelFunctionName] = function() {
         const store = Alpine.store('ui');
         if (!store.editingRowId) {
             return;
@@ -62,12 +65,72 @@ export function initializeTableEditing(config) {
         for (let row of editingRows) {
             const data = Alpine.$data(row);
             if (data && data.editing === true && data[dataProperty] && data[dataProperty][idField] === store.editingRowId) {
+                const originalValues = {};
+                const attributes = row.attributes;
+                
+                for (let attr of attributes) {
+                    if (attr.name.startsWith('data-original-')) {
+                        const fieldName = attr.name.replace('data-original-', '');
+                        originalValues[fieldName] = attr.value;
+                    }
+                }
+                
+                for (let field in originalValues) {
+                    data[dataProperty][field] = originalValues[field];
+                }
+                
                 data.editing = false;
                 break;
             }
         }
         
         store.editingRowId = null;
+        store.editingTable = null;
+    };
+
+    window[`startEditing${tableName.charAt(0).toUpperCase() + tableName.slice(1)}`] = function(recordId) {
+        const store = Alpine.store('ui');
+        
+        if (store.editingRowId && store.editingRowId !== recordId) {
+            const editingRows = document.querySelectorAll('[x-data]');
+            for (let row of editingRows) {
+                const data = Alpine.$data(row);
+                if (data && data.editing === true) {
+                    let foundEditingRow = false;
+                    let currentDataProperty = null;
+                    
+                    const possibleDataProperties = ['unit', 'tenant', 'payment'];
+                    for (let prop of possibleDataProperties) {
+                        if (data[prop] && data[prop][idField] === store.editingRowId) {
+                            foundEditingRow = true;
+                            currentDataProperty = prop;
+                            break;
+                        }
+                    }
+                    
+                    if (foundEditingRow) {
+                        const originalValues = {};
+                        const attributes = row.attributes;
+                        
+                        for (let attr of attributes) {
+                            if (attr.name.startsWith('data-original-')) {
+                                const fieldName = attr.name.replace('data-original-', '');
+                                originalValues[fieldName] = attr.value;
+                            }
+                        }
+                        
+                        for (let field in originalValues) {
+                            data[currentDataProperty][field] = originalValues[field];
+                        }
+                        
+                        data.editing = false;
+                        break;
+                    }
+                }
+            }
+        }
+        store.editingRowId = recordId;
+        store.editingTable = tableName;
     };
 
     function checkForChanges(row, currentData) {

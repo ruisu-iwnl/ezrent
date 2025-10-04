@@ -4,6 +4,8 @@ import Alpine from 'alpinejs';
 import { initializeUnitEditing } from './unit-editing.js';
 import { initializeUnitsFilter } from './units-filter.js';
 import { initializePaymentsFilter } from './payments-filter.js';
+import { initializeTenantsFilter } from './tenants-filter.js';
+import { initializeTenantEditing } from './tenant-editing.js';
 
 window.Alpine = Alpine;
 
@@ -13,10 +15,13 @@ Alpine.store('ui', {
     showTenantAssign: false,
     showExpense: false,
     editingRowId: null,
+    editingTable: null,
 });
 
 initializeUnitEditing();
 initializeUnitsFilter();
 initializePaymentsFilter();
+initializeTenantsFilter();
+initializeTenantEditing();
 
 Alpine.start();

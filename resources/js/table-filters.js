@@ -75,14 +75,37 @@ export function initializeTableFilters(config) {
     function getCellByField(row, field) {
         const cells = row.querySelectorAll('td');
         
-        const fieldMap = {
-            'code': 0,
-            'description': 2,
-            'status': 1,
-            'tenant': 1,
-            'unit': 2,
-            'method': 4
-        };
+        const table = row.closest('table').closest('[id]');
+        const tableId = table ? table.id : '';
+        
+        let fieldMap = {};
+        
+        if (tableId === 'units-table') {
+            fieldMap = {
+                'code': 0,
+                'description': 2,
+                'status': 1
+            };
+        } else if (tableId === 'tenants-table') {
+            fieldMap = {
+                'name': 0,
+                'email': 1,
+                'phone': 2,
+                'address': 3,
+                'status': 4,
+                'notes': 8
+            };
+        } else {
+
+            fieldMap = {
+                'code': 0,
+                'description': 2,
+                'status': 1,
+                'tenant': 1,
+                'unit': 2,
+                'method': 4
+            };
+        }
         
         const columnIndex = fieldMap[field];
         return columnIndex !== undefined ? cells[columnIndex] : null;
