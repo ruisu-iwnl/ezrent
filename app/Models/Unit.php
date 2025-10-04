@@ -35,6 +35,9 @@ class Unit extends Model
     {
         $referenceDate = $testDate ?: now();
         
+        if ($this->status === 'maintenance') {
+            return false;
+        }
         $activeLease = $this->leases()
             ->where(function($query) use ($referenceDate) {
                 $query->whereNull('end_date')
