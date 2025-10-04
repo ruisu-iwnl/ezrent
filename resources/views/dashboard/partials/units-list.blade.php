@@ -14,7 +14,7 @@
                         <span>•</span>
                         <span>Maintenance: <span class="font-medium text-orange-600">{{ $units->where('status', 'maintenance')->count() }}</span></span>
                     @endif
-                    <span class="ml-4" x-show="$store.ui.editingRowId && $store.ui.editingTable === 'unit'" x-transition>
+                    <span class="ml-4" x-show="$store.ui.editingRowId && $store.ui.editingTable === 'unit'" x-cloak x-transition>
                         <button @click="saveCurrentUnit()" class="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">Save</button>
                         <button @click="cancelUnitEditing()" class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600 ml-1">Cancel</button>
                     </span>

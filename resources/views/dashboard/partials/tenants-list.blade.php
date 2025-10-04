@@ -8,7 +8,7 @@
                     <span>Active: <span class="font-medium text-green-600">{{ $tenants->where('lease', '!=', null)->count() }}</span></span>
                     <span>•</span>
                     <span>Inactive: <span class="font-medium text-gray-600">{{ $tenants->where('lease', null)->count() }}</span></span>
-                    <span class="ml-4" x-show="$store.ui.editingRowId && $store.ui.editingTable === 'tenant'" x-transition>
+                    <span class="ml-4" x-show="$store.ui.editingRowId && $store.ui.editingTable === 'tenant'" x-cloak x-transition>
                         <button @click="saveCurrentTenant()" class="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">Save</button>
                         <button @click="cancelTenantEditing()" class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600 ml-1">Cancel</button>
                     </span>
