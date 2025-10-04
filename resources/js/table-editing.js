@@ -42,6 +42,7 @@ export function initializeTableEditing(config) {
         if (!hasChanges) {
             recordData.editing = false;
             store.editingRowId = null;
+            store.editingTable = null;
             return;
         }
         
@@ -91,7 +92,7 @@ export function initializeTableEditing(config) {
     window[`startEditing${tableName.charAt(0).toUpperCase() + tableName.slice(1)}`] = function(recordId) {
         const store = Alpine.store('ui');
         
-        if (store.editingRowId && store.editingRowId !== recordId) {
+        if (store.editingRowId && (store.editingRowId !== recordId || store.editingTable !== tableName)) {
             const editingRows = document.querySelectorAll('[x-data]');
             for (let row of editingRows) {
                 const data = Alpine.$data(row);
