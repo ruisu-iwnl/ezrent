@@ -28,7 +28,7 @@ class DashboardController extends Controller
     private function getAdminDashboard(Request $request, $testDate)
     {
 
-        $data = $this->getBaseData($request);
+        $data = $this->getBaseData($request, $testDate);
         
         foreach ($data['units'] as $unit) {
             $unit->handleExpiredLeases($testDate);
@@ -61,7 +61,7 @@ class DashboardController extends Controller
         return view('dashboard', compact('tenant'));
     }
 
-    private function getBaseData(Request $request)
+    private function getBaseData(Request $request, $testDate = null)
     {
         $unitsQuery = Unit::with(['leases.tenant.user', 'admin']);
         
@@ -87,6 +87,34 @@ class DashboardController extends Controller
             ->whereHas('unit')
             ->get();
 
-        return compact('units', 'payments', 'tenants', 'expenses', 'allLeases');
+        $availableMonths = $this->getAvailableMonths($payments, $testDate);
+
+        return compact('units', 'payments', 'tenants', 'expenses', 'allLeases', 'availableMonths');
+    }
+
+    private function getAvailableMonths($payments, $testDate = null)
+    {
+        $months = [];
+        $referenceDate = $testDate ?: now();
+        
+        $paymentMonths = $payments->map(function($payment) {
+            return $payment->paid_at->format('Y-m');
+        })->unique()->sort()->values();
+        
+        $referenceMonthStr = $referenceDate->format('Y-m');
+        if (!$paymentMonths->contains($referenceMonthStr)) {
+            $paymentMonths->push($referenceMonthStr);
+        }
+        
+        foreach ($paymentMonths as $monthStr) {
+            $date = \Carbon\Carbon::createFromFormat('Y-m', $monthStr);
+            $months[] = [
+                'value' => $monthStr,
+                'label' => $date->format('F Y'),
+                'selected' => $monthStr === $referenceMonthStr
+            ];
+        }
+        
+        return $months;
     }
 }

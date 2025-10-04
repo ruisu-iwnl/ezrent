@@ -21,12 +21,13 @@
             </div>
         </div>
         <div class="flex items-center gap-2">
-            <select name="method_filter" class="rounded-md border-gray-300 dark:bg-gray-900 dark:border-gray-700 text-sm">
-                <option value="">All Methods</option>
-                <option value="cash">Cash</option>
-                <option value="gcash">GCash</option>
-                <option value="bank_transfer">Bank Transfer</option>
-                <option value="check">Check</option>
+            <select name="month_filter" class="rounded-md border-gray-300 dark:bg-gray-900 dark:border-gray-700 text-sm">
+                <option value="">All Months</option>
+                @foreach($availableMonths as $month)
+                    <option value="{{ $month['value'] }}" {{ $month['selected'] ? 'selected' : '' }}>
+                        {{ $month['label'] }}
+                    </option>
+                @endforeach
             </select>
             <input type="text" name="search" placeholder="Search tenant or unit..." class="rounded-md border-gray-300 dark:bg-gray-900 dark:border-gray-700 text-sm w-48">
         </div>
@@ -45,7 +46,22 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($payments as $payment)
+                @php
+                    $selectedMonth = request('month_filter');
+
+                    if (!$selectedMonth) {
+                        $defaultMonth = collect($availableMonths)->firstWhere('selected', true);
+                        $selectedMonth = $defaultMonth ? $defaultMonth['value'] : null;
+                    }
+                    
+                    $filteredPayments = $payments;
+                    if ($selectedMonth) {
+                        $filteredPayments = $payments->filter(function($payment) use ($selectedMonth) {
+                            return $payment->paid_at->format('Y-m') === $selectedMonth;
+                        });
+                    }
+                @endphp
+                @forelse($filteredPayments as $payment)
                 <tr x-data="{ payment: { id: {{ $payment->id }}, amount: {{ $payment->amount }}, method: '{{ $payment->method }}', reference: '{{ $payment->reference }}', notes: '{{ $payment->notes }}' }, editing: false }" 
                     class="border-t border-gray-200/60 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50"
                     data-original-amount="{{ $payment->amount }}"

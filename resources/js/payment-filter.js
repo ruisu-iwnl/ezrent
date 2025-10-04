@@ -4,15 +4,10 @@ export function initializePaymentFilter() {
     initializeTableFilters({
         tableId: 'payments-table',
         searchPlaceholder: 'Search tenant or unit...',
-        filterOptions: [
-            { value: 'cash', label: 'Cash' },
-            { value: 'gcash', label: 'GCash' },
-            { value: 'bank_transfer', label: 'Bank Transfer' },
-            { value: 'check', label: 'Check' }
-        ],
-        filterLabel: 'All Methods',
+        filterOptions: [],
+        filterLabel: 'All Months',
         searchFields: ['tenant', 'unit'],
-        statusField: 'method',
+        statusField: 'date',
         statsSelector: '.flex.items-center.gap-2.text-xs.text-gray-500',
         customStatsFunction: function(table) {
             const totalRows = table.querySelectorAll('tbody tr[x-data]').length;

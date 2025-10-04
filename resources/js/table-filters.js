@@ -13,7 +13,7 @@ export function initializeTableFilters(config) {
     if (!table) return;
     
     const searchInput = table.querySelector('input[name="search"]');
-    const filterSelect = table.querySelector('select[name="status_filter"]') || table.querySelector('select[name="category_filter"]') || table.querySelector('select[name="method_filter"]');
+    const filterSelect = table.querySelector('select[name="status_filter"]') || table.querySelector('select[name="category_filter"]') || table.querySelector('select[name="method_filter"]') || table.querySelector('select[name="month_filter"]');
     
     if (!searchInput && !filterSelect) return;
     
@@ -52,11 +52,16 @@ export function initializeTableFilters(config) {
             }
             
              if (filterValue) {
-                 const statusCell = getCellByField(row, statusField);
-                 if (statusCell) {
-                     const cellText = statusCell.textContent.toLowerCase().trim();
-                     const filterText = filterValue.toLowerCase();
-                     matchesFilter = cellText.startsWith(filterText);
+                 if (statusField === 'date' && filterSelect.name === 'month_filter') {
+                     // Skip JavaScript filtering for month - handled by Laravel
+                     matchesFilter = true;
+                 } else {
+                     const statusCell = getCellByField(row, statusField);
+                     if (statusCell) {
+                         const cellText = statusCell.textContent.toLowerCase().trim();
+                         const filterText = filterValue.toLowerCase();
+                         matchesFilter = cellText.startsWith(filterText);
+                     }
                  }
              }
             
@@ -118,7 +123,8 @@ export function initializeTableFilters(config) {
             fieldMap = {
                 'tenant': 1,
                 'unit': 2,
-                'method': 4
+                'method': 4,
+                'date': 0
             };
         } else {
 
@@ -220,6 +226,18 @@ export function initializeTableFilters(config) {
     if (filterSelect) {
         filterSelect.addEventListener('change', function() {
             if (this.disabled) return; 
+
+            if (this.name === 'month_filter') {
+                const url = new URL(window.location);
+                if (this.value) {
+                    url.searchParams.set('month_filter', this.value);
+                } else {
+                    url.searchParams.delete('month_filter');
+                }
+                window.location.href = url.toString();
+                return;
+            }
+            
             filterTable();
         });
     }
