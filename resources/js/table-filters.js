@@ -13,7 +13,7 @@ export function initializeTableFilters(config) {
     if (!table) return;
     
     const searchInput = table.querySelector('input[name="search"]');
-    const filterSelect = table.querySelector('select[name="status_filter"]');
+    const filterSelect = table.querySelector('select[name="status_filter"]') || table.querySelector('select[name="category_filter"]');
     
     if (!searchInput && !filterSelect) return;
     
@@ -94,6 +94,11 @@ export function initializeTableFilters(config) {
                 'address': 3,
                 'status': 4,
                 'notes': 8
+            };
+        } else if (tableId === 'expenses-table') {
+            fieldMap = {
+                'description': 2,
+                'category': 1
             };
         } else {
 

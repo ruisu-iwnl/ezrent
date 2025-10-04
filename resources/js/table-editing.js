@@ -99,7 +99,7 @@ export function initializeTableEditing(config) {
                     let foundEditingRow = false;
                     let currentDataProperty = null;
                     
-                    const possibleDataProperties = ['unit', 'tenant', 'payment'];
+                    const possibleDataProperties = ['unit', 'tenant', 'payment', 'expense'];
                     for (let prop of possibleDataProperties) {
                         if (data[prop] && data[prop][idField] === store.editingRowId) {
                             foundEditingRow = true;

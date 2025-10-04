@@ -6,6 +6,8 @@ import { initializeUnitsFilter } from './units-filter.js';
 import { initializePaymentsFilter } from './payments-filter.js';
 import { initializeTenantsFilter } from './tenants-filter.js';
 import { initializeTenantEditing } from './tenant-editing.js';
+import { initializeExpenseEditing } from './expense-editing.js';
+import { initializeExpensesFilter } from './expenses-filter.js';
 
 window.Alpine = Alpine;
 
@@ -23,5 +25,7 @@ initializeUnitsFilter();
 initializePaymentsFilter();
 initializeTenantsFilter();
 initializeTenantEditing();
+initializeExpenseEditing();
+initializeExpensesFilter();
 
 Alpine.start();
