@@ -29,24 +29,38 @@ class Unit extends Model
     }
 
     /**
+     * Get the relevant lease for a unit at a given date
+     * Returns the lease if it's active or scheduled for the future
+     */
+    public function getRelevantLease($testDate = null)
+    {
+        $referenceDate = $testDate ?: now();
+        
+        return $this->leases()
+            ->where(function($query) use ($referenceDate) {
+                $query->where(function($q) use ($referenceDate) {
+                    $q->where('start_date', '<=', $referenceDate->toDateString())
+                      ->where(function($qq) use ($referenceDate) {
+                          $qq->whereNull('end_date')
+                             ->orWhere('end_date', '>', $referenceDate->toDateString());
+                      });
+                })
+                ->orWhere('start_date', '>', $referenceDate->toDateString());
+            })
+            ->first();
+    }
+
+    /**
      * Update unit status based on active leases (respects test date)
      */
     public function updateStatusFromLease($testDate = null)
     {
-        $referenceDate = $testDate ?: now();
-        
         if ($this->status === 'maintenance') {
             return false;
         }
-        $activeLease = $this->leases()
-            ->where(function($query) use ($referenceDate) {
-                $query->whereNull('end_date')
-                      ->orWhere('end_date', '>', $referenceDate->toDateString());
-            })
-            ->where('start_date', '<=', $referenceDate->toDateString())
-            ->first();
-            
-        $newStatus = $activeLease ? 'occupied' : 'vacant';
+        
+        $relevantLease = $this->getRelevantLease($testDate);
+        $newStatus = $relevantLease ? 'occupied' : 'vacant';
         
         if ($this->status !== $newStatus) {
             $this->update(['status' => $newStatus]);

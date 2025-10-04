@@ -76,17 +76,10 @@
                     </td>
                     <td class="px-4 py-3">
                         @php
-                            $activeLease = $unit->leases()
-                                ->where(function($query) use ($testDate) {
-                                    $referenceDate = $testDate ?: now();
-                                    $query->whereNull('end_date')
-                                          ->orWhere('end_date', '>', $referenceDate->toDateString());
-                                })
-                                ->where('start_date', '<=', ($testDate ?: now())->toDateString())
-                                ->whereHas('tenant', function($query) {
-                                    $query->where('status', 'active');
-                                })
-                                ->first();
+                            $activeLease = $unit->getRelevantLease($testDate);
+                            if ($activeLease && $activeLease->tenant->status !== 'active') {
+                                $activeLease = null;
+                            }
                         @endphp
                         @if($activeLease)
                             <div class="flex flex-col">

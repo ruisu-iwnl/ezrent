@@ -60,8 +60,8 @@ class TenantController extends Controller
                 'notes' => $request->input('lease.notes'),
             ]);
 
-            Unit::where('id', $request->input('lease.unit_id'))
-                ->update(['status' => 'occupied']);
+            $unit = Unit::find($request->input('lease.unit_id'));
+            $unit->update(['status' => 'occupied']);
         });
 
         return redirect()->route('dashboard')->with('success', 'Tenant created and assigned to unit successfully!');

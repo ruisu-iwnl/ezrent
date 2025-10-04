@@ -48,15 +48,10 @@
                         @enderror
                     </div>
                     <div>
-                        <select name="tenant[status]" class="w-full rounded-md border-gray-300 dark:bg-gray-900 dark:border-gray-700 @error('tenant.status') border-red-500 @enderror" required>
-                            <option value="">Select status...</option>
-                            <option value="active" {{ old('tenant.status') == 'active' ? 'selected' : '' }}>Active</option>
-                            <option value="inactive" {{ old('tenant.status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                            <option value="former" {{ old('tenant.status') == 'former' ? 'selected' : '' }}>Former</option>
-                        </select>
-                        @error('tenant.status')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                        <input type="hidden" name="tenant[status]" value="active">
+                        <div class="w-full px-3 py-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-md text-sm font-medium">
+                            Status: Active
+                        </div>
                     </div>
                     <div>
                         <textarea name="tenant[notes]" rows="2" class="w-full rounded-md border-gray-300 dark:bg-gray-900 dark:border-gray-700 @error('tenant.notes') border-red-500 @enderror" placeholder="Notes (optional)">{{ old('tenant.notes') }}</textarea>
