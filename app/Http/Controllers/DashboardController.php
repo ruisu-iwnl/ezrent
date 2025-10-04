@@ -64,7 +64,9 @@ class DashboardController extends Controller
                 return $payment->paid_at->year === $currentYear && $payment->paid_at->month === $currentMonth;
             })->sum('amount');
             
-            $outstandingPayments = $allLeases->sum(function($lease) use ($currentYear, $currentMonth) {
+            $outstandingPayments = $allLeases->filter(function($lease) use ($testDate) {
+                return $lease->getLeaseStatus($testDate) === 'active';
+            })->sum(function($lease) use ($currentYear, $currentMonth) {
                 return $lease->getRemainingAmountForMonth($currentYear, $currentMonth);
             });
             
@@ -111,10 +113,15 @@ class DashboardController extends Controller
             $revenueComparison = $revenueDifference >= 0 ? '+' : '';
             $revenueComparisonText = $revenueComparison . '₱' . number_format(abs($revenueDifference), 2) . ' vs last month';
             
-            $monthlyTarget = $allLeases->sum('monthly_rent');
+            $monthlyTarget = $allLeases->filter(function($lease) use ($testDate) {
+                // Only include active leases (not expired)
+                return $lease->getLeaseStatus($testDate) === 'active';
+            })->sum('monthly_rent');
             $targetPercentage = $monthlyTarget > 0 ? round(($totalMonthlyRevenue / $monthlyTarget) * 100) : 0;
             
-            $overdueLeases = $allLeases->filter(function($lease) use ($currentYear, $currentMonth, $referenceDate) {
+            $overdueLeases = $allLeases->filter(function($lease) use ($currentYear, $currentMonth, $referenceDate, $testDate) {
+                // Only consider active leases for overdue calculation
+                if ($lease->getLeaseStatus($testDate) !== 'active') return false;
 
                 $remainingAmount = $lease->getRemainingAmountForMonth($currentYear, $currentMonth);
                 if ($remainingAmount <= 0) return false; 
