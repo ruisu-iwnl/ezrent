@@ -50,7 +50,7 @@
                     data-original-description="{{ $unit->description }}">
                     <td class="px-4 py-3 font-medium">
                         <div x-show="!editing" @click="editing = true; $store.ui.editingRowId = unit.id" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400">{{ $unit->code }}</div>
-                        <input x-show="editing" x-model="unit.code" type="text" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" @click.stop>
+                        <input x-show="editing" x-cloak x-model="unit.code" type="text" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" @click.stop>
                     </td>
                     <td class="px-4 py-3">
                         <div x-show="!editing" @click="editing = true; $store.ui.editingRowId = unit.id" class="cursor-pointer">
@@ -62,14 +62,14 @@
                                 <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">Maintenance</span>
                             @endif
                         </div>
-                        <select x-show="editing" x-model="unit.status" class="text-xs px-2 py-1 border rounded dark:bg-gray-700 dark:border-gray-600" @click.stop>
+                        <select x-show="editing" x-cloak x-model="unit.status" class="text-xs px-2 py-1 border rounded dark:bg-gray-700 dark:border-gray-600" @click.stop>
                             <option value="vacant">Vacant</option>
                             <option value="maintenance">Maintenance</option>
                         </select>
                     </td>
                     <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
                         <div x-show="!editing" @click="editing = true; $store.ui.editingRowId = unit.id" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400">{{ $unit->description ?? 'Click to add description' }}</div>
-                        <textarea x-show="editing" x-model="unit.description" rows="2" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" @click.stop></textarea>
+                        <textarea x-show="editing" x-cloak x-model="unit.description" rows="2" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" @click.stop></textarea>
                     </td>
                     <td class="px-4 py-3">
                         @if($unit->leases->isNotEmpty())
