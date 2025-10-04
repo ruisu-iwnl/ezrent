@@ -75,19 +75,31 @@
                         <textarea x-show="editing" x-cloak x-model="unit.description" rows="2" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" @click.stop></textarea>
                     </td>
                     <td class="px-4 py-3">
-                        @if($unit->leases->isNotEmpty())
-                            @php($currentLease = $unit->leases->first())
+                        @php
+                            $activeLease = $unit->leases()
+                                ->where(function($query) use ($testDate) {
+                                    $referenceDate = $testDate ?: now();
+                                    $query->whereNull('end_date')
+                                          ->orWhere('end_date', '>', $referenceDate->toDateString());
+                                })
+                                ->where('start_date', '<=', ($testDate ?: now())->toDateString())
+                                ->whereHas('tenant', function($query) {
+                                    $query->where('status', 'active');
+                                })
+                                ->first();
+                        @endphp
+                        @if($activeLease)
                             <div class="flex flex-col">
-                                <span class="font-medium">{{ $currentLease->tenant->user->name }}</span>
-                                <span class="text-xs text-gray-500">{{ $currentLease->tenant->user->email }}</span>
+                                <span class="font-medium">{{ $activeLease->tenant->user->name }}</span>
+                                <span class="text-xs text-gray-500">{{ $activeLease->tenant->user->email }}</span>
                             </div>
                         @else
                             <span class="text-gray-500 italic">Vacant</span>
                         @endif
                     </td>
                     <td class="px-4 py-3 font-medium">
-                        @if($unit->leases->isNotEmpty())
-                            ₱{{ number_format($unit->leases->first()->monthly_rent, 2) }}
+                        @if($activeLease)
+                            ₱{{ number_format($activeLease->monthly_rent, 2) }}
                         @else
                             <span class="text-gray-500">—</span>
                         @endif
