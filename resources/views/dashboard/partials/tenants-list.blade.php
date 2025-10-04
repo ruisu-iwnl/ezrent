@@ -1,22 +1,26 @@
-<div class="bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700 rounded-lg">
+<div id="tenants-table" class="bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700 rounded-lg">
     <div class="px-4 py-3 border-b border-gray-200/60 dark:border-gray-700 flex items-center justify-between">
-        <div class="flex items-center gap-4">
-            <h4 class="font-medium">Tenants Management</h4>
-            <div class="flex items-center gap-2 text-xs text-gray-500">
-                <span>Total: <span class="font-medium">12</span></span>
-                <span>•</span>
-                <span>Active: <span class="font-medium text-green-600">10</span></span>
-                <span>•</span>
-                <span>Inactive: <span class="font-medium text-gray-600">2</span></span>
+            <div class="flex items-center gap-4">
+                <h4 class="font-medium">Tenants Management</h4>
+                <div class="flex items-center gap-2 text-xs text-gray-500">
+                    <span>Total: <span class="font-medium">{{ $tenants->count() }}</span></span>
+                    <span>•</span>
+                    <span>Active: <span class="font-medium text-green-600">{{ $tenants->where('lease', '!=', null)->count() }}</span></span>
+                    <span>•</span>
+                    <span>Inactive: <span class="font-medium text-gray-600">{{ $tenants->where('lease', null)->count() }}</span></span>
+                    <span class="ml-4" x-show="$store.ui.editingRowId && $store.ui.editingTable === 'tenant'" x-transition>
+                        <button @click="saveCurrentTenant()" class="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">Save</button>
+                        <button @click="cancelTenantEditing()" class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600 ml-1">Cancel</button>
+                    </span>
+                </div>
             </div>
-        </div>
         <div class="flex items-center gap-2">
             <select name="status_filter" class="rounded-md border-gray-300 dark:bg-gray-900 dark:border-gray-700 text-sm">
                 <option value="">All Status</option>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
             </select>
-            <input type="text" placeholder="Search tenant name..." class="rounded-md border-gray-300 dark:bg-gray-900 dark:border-gray-700 text-sm w-48">
+            <input type="text" name="search" placeholder="Search tenant name..." class="rounded-md border-gray-300 dark:bg-gray-900 dark:border-gray-700 text-sm w-48">
         </div>
     </div>
     <div class="overflow-x-auto">
@@ -26,111 +30,72 @@
                     <th class="text-left px-4 py-3 font-medium">Name</th>
                     <th class="text-left px-4 py-3 font-medium">Email</th>
                     <th class="text-left px-4 py-3 font-medium">Phone</th>
+                    <th class="text-left px-4 py-3 font-medium">Address</th>
                     <th class="text-left px-4 py-3 font-medium">Status</th>
                     <th class="text-left px-4 py-3 font-medium">Current Unit</th>
                     <th class="text-left px-4 py-3 font-medium">Rent Due</th>
                     <th class="text-left px-4 py-3 font-medium">Valid ID</th>
+                    <th class="text-left px-4 py-3 font-medium">Notes</th>
                 </tr>
             </thead>
             <tbody>
-                <tr class="border-t border-gray-200/60 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                    <td class="px-4 py-3 font-medium">John Tenant</td>
-                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">john@email.com</td>
-                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">+63 912 345 6789</td>
-                    <td class="px-4 py-3">
-                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Active</span>
+                @forelse($tenants as $tenant)
+                <tr class="border-t border-gray-200/60 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50" 
+                    x-data="{ tenant: {{ $tenant->toJson() }}, editing: false }"
+                    data-original-phone="{{ $tenant->phone }}"
+                    data-original-address="{{ $tenant->address }}"
+                    data-original-notes="{{ $tenant->notes }}">
+                    <td class="px-4 py-3 font-medium">{{ $tenant->user->name }}</td>
+                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">{{ $tenant->user->email }}</td>
+                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
+                        <div x-show="!editing" @click="startEditingTenant(tenant.id); editing = true" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400">{{ $tenant->phone ?? 'Click to add phone' }}</div>
+                        <input x-show="editing" x-cloak x-model="tenant.phone" type="text" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" placeholder="Phone number" @click.stop>
+                    </td>
+                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
+                        <div x-show="!editing" @click="startEditingTenant(tenant.id); editing = true" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400">{{ $tenant->address ?? 'Click to add address' }}</div>
+                        <textarea x-show="editing" x-cloak x-model="tenant.address" rows="2" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" placeholder="Address" @click.stop></textarea>
                     </td>
                     <td class="px-4 py-3">
-                        <div class="flex flex-col">
-                            <span class="font-medium">A-201</span>
-                            <span class="text-xs text-gray-500">2-bedroom apartment</span>
-                        </div>
-                    </td>
-                    <td class="px-4 py-3 font-medium text-orange-600">₱10,000</td>
-                    <td class="px-4 py-3">
-                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">✓ Verified</span>
-                    </td>
-                </tr>
-                <tr class="border-t border-gray-200/60 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                    <td class="px-4 py-3 font-medium">Jane Doe</td>
-                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">jane@email.com</td>
-                    <td class="px-4 py-3 text-gray-500 italic">Not provided</td>
-                    <td class="px-4 py-3">
-                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Active</span>
+                        @if($tenant->lease)
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Active</span>
+                        @else
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">Inactive</span>
+                        @endif
                     </td>
                     <td class="px-4 py-3">
-                        <div class="flex flex-col">
-                            <span class="font-medium">A-202</span>
-                            <span class="text-xs text-gray-500">1-bedroom studio</span>
-                        </div>
+                        @if($tenant->lease)
+                            <div class="flex flex-col">
+                                <span class="font-medium">{{ $tenant->lease->unit->code }}</span>
+                                <span class="text-xs text-gray-500">{{ $tenant->lease->unit->description ?? 'No description' }}</span>
+                            </div>
+                        @else
+                            <span class="text-gray-500 italic">No current unit</span>
+                        @endif
                     </td>
-                    <td class="px-4 py-3 font-medium text-green-600">₱12,000</td>
-                    <td class="px-4 py-3">
-                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">✓ Verified</span>
-                    </td>
-                </tr>
-                <tr class="border-t border-gray-200/60 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                    <td class="px-4 py-3 font-medium">Mike Johnson</td>
-                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">mike@email.com</td>
-                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">+63 915 987 6543</td>
-                    <td class="px-4 py-3">
-                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Active</span>
+                    <td class="px-4 py-3 font-medium">
+                        @if($tenant->lease)
+                            ₱{{ number_format($tenant->lease->monthly_rent, 2) }}
+                        @else
+                            <span class="text-gray-500 italic">—</span>
+                        @endif
                     </td>
                     <td class="px-4 py-3">
-                        <div class="flex flex-col">
-                            <span class="font-medium">B-101</span>
-                            <span class="text-xs text-gray-500">3-bedroom ground floor</span>
-                        </div>
+                        @if($tenant->valid_id_path)
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">✓ Verified</span>
+                        @else
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">Missing</span>
+                        @endif
                     </td>
-                    <td class="px-4 py-3 font-medium text-red-600">₱8,500</td>
-                    <td class="px-4 py-3">
-                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">Pending</span>
+                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
+                        <div x-show="!editing" @click="startEditingTenant(tenant.id); editing = true" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400">{{ $tenant->notes ?? 'Click to add notes' }}</div>
+                        <textarea x-show="editing" x-cloak x-model="tenant.notes" rows="2" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" placeholder="Notes" @click.stop></textarea>
                     </td>
                 </tr>
-                <tr class="border-t border-gray-200/60 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                    <td class="px-4 py-3 font-medium text-gray-500">Sarah Wilson</td>
-                    <td class="px-4 py-3 text-gray-500 italic">sarah@email.com</td>
-                    <td class="px-4 py-3 text-gray-500 italic">+63 918 765 4321</td>
-                    <td class="px-4 py-3">
-                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">Inactive</span>
-                    </td>
-                    <td class="px-4 py-3 text-gray-500 italic">No current unit</td>
-                    <td class="px-4 py-3 text-gray-500 italic">—</td>
-                    <td class="px-4 py-3">
-                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">✓ Verified</span>
-                    </td>
+                @empty
+                <tr>
+                    <td colspan="9" class="px-4 py-8 text-center text-gray-500">No tenants found. Create your first tenant using the "Add Tenant & Assign" button above.</td>
                 </tr>
-                <tr class="border-t border-gray-200/60 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                    <td class="px-4 py-3 font-medium">Alex Rodriguez</td>
-                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">alex@email.com</td>
-                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">+63 920 111 2222</td>
-                    <td class="px-4 py-3">
-                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Active</span>
-                    </td>
-                    <td class="px-4 py-3">
-                        <div class="flex flex-col">
-                            <span class="font-medium">A-301</span>
-                            <span class="text-xs text-gray-500">2-bedroom apartment</span>
-                        </div>
-                    </td>
-                    <td class="px-4 py-3 font-medium text-green-600">₱11,000</td>
-                    <td class="px-4 py-3">
-                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">Expired</span>
-                    </td>
-                </tr>
-                <tr class="border-t border-gray-200/60 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                    <td class="px-4 py-3 font-medium text-gray-500">Maria Garcia</td>
-                    <td class="px-4 py-3 text-gray-500 italic">maria@email.com</td>
-                    <td class="px-4 py-3 text-gray-500 italic">Not provided</td>
-                    <td class="px-4 py-3">
-                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">Inactive</span>
-                    </td>
-                    <td class="px-4 py-3 text-gray-500 italic">No current unit</td>
-                    <td class="px-4 py-3 text-gray-500 italic">—</td>
-                    <td class="px-4 py-3">
-                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">Missing</span>
-                    </td>
-                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>

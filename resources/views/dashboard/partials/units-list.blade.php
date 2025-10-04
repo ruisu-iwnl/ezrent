@@ -14,9 +14,9 @@
                         <span>•</span>
                         <span>Maintenance: <span class="font-medium text-orange-600">{{ $units->where('status', 'maintenance')->count() }}</span></span>
                     @endif
-                    <span class="ml-4" x-show="$store.ui.editingRowId" x-transition>
-                        <button @click="saveCurrentRecord()" class="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">Save</button>
-                        <button @click="cancelEditing()" class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600 ml-1">Cancel</button>
+                    <span class="ml-4" x-show="$store.ui.editingRowId && $store.ui.editingTable === 'unit'" x-transition>
+                        <button @click="saveCurrentUnit()" class="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">Save</button>
+                        <button @click="cancelUnitEditing()" class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600 ml-1">Cancel</button>
                     </span>
             </div>
         </div>
@@ -49,11 +49,11 @@
                     data-original-status="{{ $unit->status }}"
                     data-original-description="{{ $unit->description }}">
                     <td class="px-4 py-3 font-medium">
-                        <div x-show="!editing" @click="editing = true; $store.ui.editingRowId = unit.id" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400">{{ $unit->code }}</div>
+                        <div x-show="!editing" @click="startEditingUnit(unit.id); editing = true" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400">{{ $unit->code }}</div>
                         <input x-show="editing" x-cloak x-model="unit.code" type="text" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" @click.stop>
                     </td>
                     <td class="px-4 py-3">
-                        <div x-show="!editing" @click="editing = true; $store.ui.editingRowId = unit.id" class="cursor-pointer">
+                        <div x-show="!editing" @click="if(unit.status !== 'occupied') { startEditingUnit(unit.id); editing = true; }" class="{{ $unit->status === 'occupied' ? 'cursor-not-allowed opacity-75' : 'cursor-pointer' }}">
                             @if($unit->status === 'vacant')
                                 <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Vacant</span>
                             @elseif($unit->status === 'occupied')
@@ -62,13 +62,16 @@
                                 <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">Maintenance</span>
                             @endif
                         </div>
-                        <select x-show="editing" x-cloak x-model="unit.status" class="text-xs px-2 py-1 border rounded dark:bg-gray-700 dark:border-gray-600" @click.stop>
+                        <select x-show="editing && unit.status !== 'occupied'" x-cloak x-model="unit.status" class="text-xs px-2 py-1 border rounded dark:bg-gray-700 dark:border-gray-600" @click.stop>
                             <option value="vacant">Vacant</option>
                             <option value="maintenance">Maintenance</option>
                         </select>
+                        <div x-show="editing && unit.status === 'occupied'" x-cloak class="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 border rounded text-gray-500">
+                            Occupied (Cannot edit)
+                        </div>
                     </td>
                     <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
-                        <div x-show="!editing" @click="editing = true; $store.ui.editingRowId = unit.id" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400">{{ $unit->description ?? 'Click to add description' }}</div>
+                        <div x-show="!editing" @click="startEditingUnit(unit.id); editing = true" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400">{{ $unit->description ?? 'Click to add description' }}</div>
                         <textarea x-show="editing" x-cloak x-model="unit.description" rows="2" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" @click.stop></textarea>
                     </td>
                     <td class="px-4 py-3">
