@@ -5,9 +5,11 @@
                 <div class="flex items-center gap-2 text-xs text-gray-500">
                     <span>Total: <span class="font-medium">{{ $tenants->count() }}</span></span>
                     <span>•</span>
-                    <span>Active: <span class="font-medium text-green-600">{{ $tenants->where('lease', '!=', null)->count() }}</span></span>
+                    <span>Active: <span class="font-medium text-green-600">{{ $tenants->where('status', 'active')->count() }}</span></span>
                     <span>•</span>
-                    <span>Inactive: <span class="font-medium text-gray-600">{{ $tenants->where('lease', null)->count() }}</span></span>
+                    <span>Inactive: <span class="font-medium text-gray-600">{{ $tenants->where('status', 'inactive')->count() }}</span></span>
+                    <span>•</span>
+                    <span>Former: <span class="font-medium text-blue-600">{{ $tenants->where('status', 'former')->count() }}</span></span>
                     <span class="ml-4" x-show="$store.ui.editingRowId && $store.ui.editingTable === 'tenant'" x-cloak x-transition>
                         <button @click="saveCurrentTenant()" class="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">Save</button>
                         <button @click="cancelTenantEditing()" class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600 ml-1">Cancel</button>
@@ -19,6 +21,7 @@
                 <option value="">All Status</option>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
+                <option value="former">Former</option>
             </select>
             <input type="text" name="search" placeholder="Search tenant name..." class="rounded-md border-gray-300 dark:bg-gray-900 dark:border-gray-700 text-sm w-48">
         </div>
@@ -56,11 +59,9 @@
                         <textarea x-show="editing" x-cloak x-model="tenant.address" rows="2" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" placeholder="Address" @click.stop></textarea>
                     </td>
                     <td class="px-4 py-3">
-                        @if($tenant->lease)
-                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Active</span>
-                        @else
-                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">Inactive</span>
-                        @endif
+                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs {{ $tenant->getStatusBadgeClass() }}">
+                            {{ ucfirst($tenant->status) }}
+                        </span>
                     </td>
                     <td class="px-4 py-3">
                         @if($tenant->lease)

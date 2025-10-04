@@ -20,6 +20,7 @@ class TenantController extends Controller
             'tenant.phone' => 'nullable|string|max:20',
             'tenant.date_of_birth' => 'nullable|date',
             'tenant.address' => 'nullable|string|max:500',
+            'tenant.status' => 'required|in:active,inactive,former',
             'tenant.notes' => 'nullable|string|max:1000',
             'lease.unit_id' => 'required|exists:units,id',
             'lease.start_date' => 'required|date',
@@ -45,6 +46,7 @@ class TenantController extends Controller
                 'phone' => $request->input('tenant.phone'),
                 'date_of_birth' => $request->input('tenant.date_of_birth'),
                 'address' => $request->input('tenant.address'),
+                'status' => 'active',
                 'notes' => $request->input('tenant.notes'),
             ]);
 
@@ -70,12 +72,14 @@ class TenantController extends Controller
         $request->validate([
             'tenant.phone' => 'nullable|string|max:20',
             'tenant.address' => 'nullable|string|max:500',
+            'tenant.status' => 'nullable|in:active,inactive,former',
             'tenant.notes' => 'nullable|string|max:1000',
         ]);
 
         $tenant->update([
             'phone' => $request->input('tenant.phone'),
             'address' => $request->input('tenant.address'),
+            'status' => $request->input('tenant.status'),
             'notes' => $request->input('tenant.notes'),
         ]);
 
