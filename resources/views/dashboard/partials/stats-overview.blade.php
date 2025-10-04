@@ -157,7 +157,7 @@
                 @if($expiringDetails->count() > 0)
                     @foreach($expiringDetails->take(2) as $detail)
                         <div class="bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400 px-2 py-1 rounded">
-                            {{ $detail['lease']->tenant->user->name ?? 'Unknown' }} - {{ $detail['days_until_expiration'] }} days
+                            {{ $detail['tenant']->user->name ?? 'Unknown' }} - {{ $detail['days_until_expiration'] }} days
                         </div>
                     @endforeach
                 @else
