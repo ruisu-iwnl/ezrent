@@ -17,6 +17,10 @@ class UnitFeeLog extends Model
         'attachment_path',
     ];
 
+    protected $casts = [
+        'incurred_at' => 'date',
+    ];
+
     public function unit()
     {
         return $this->belongsTo(Unit::class);

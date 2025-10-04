@@ -3,13 +3,13 @@
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Monthly Revenue</p>
-                <p class="text-2xl font-bold text-gray-900 dark:text-white">₱31,500</p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white">₱{{ number_format($totalMonthlyRevenue, 2) }}</p>
                 <p class="text-xs text-green-600 dark:text-green-400 mt-1">
                     <span class="inline-flex items-center">
                         <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                         </svg>
-                        +₱2,500 vs last month
+                        {{ $revenueComparisonText }}
                     </span>
                 </p>
             </div>
@@ -23,11 +23,11 @@
         </div>
         <div class="mt-4">
             <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-600 dark:text-gray-400">Target: ₱35,000</span>
-                <span class="text-gray-600 dark:text-gray-400">90%</span>
+                <span class="text-gray-600 dark:text-gray-400">Target: ₱{{ number_format($monthlyTarget, 2) }}</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $targetPercentage }}%</span>
             </div>
             <div class="mt-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                <div class="bg-green-600 h-2 rounded-full" style="width: 90%"></div>
+                <div class="bg-green-600 h-2 rounded-full" style="width: {{ min($targetPercentage, 100) }}%"></div>
             </div>
         </div>
     </div>
@@ -36,7 +36,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Outstanding Payments</p>
-                <p class="text-2xl font-bold text-gray-900 dark:text-white">₱22,500</p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white">₱{{ number_format($outstandingPayments, 2) }}</p>
                 <p class="text-xs text-orange-600 dark:text-orange-400 mt-1">
                     <span class="inline-flex items-center">
                         <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -56,16 +56,25 @@
         </div>
         <div class="mt-4">
             <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-600 dark:text-gray-400">Overdue: 3 tenants</span>
-                <span class="text-gray-600 dark:text-gray-400">2 overdue</span>
+                <span class="text-gray-600 dark:text-gray-400">Overdue: {{ $overdueCount }} tenants</span>
+                <span class="text-gray-600 dark:text-gray-400">₱{{ number_format($overdueAmount, 2) }}</span>
             </div>
             <div class="mt-1 grid grid-cols-2 gap-2 text-xs">
-                <div class="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 px-2 py-1 rounded">
-                    ₱8,500 overdue >30 days
-                </div>
-                <div class="bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400 px-2 py-1 rounded">
-                    2 payments pending
-                </div>
+                @if($overdueDetails->where('days_overdue', '>', 30)->count() > 0)
+                    <div class="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 px-2 py-1 rounded">
+                        ₱{{ number_format($overdueDetails->where('days_overdue', '>', 30)->sum('amount'), 2) }} overdue >30 days
+                    </div>
+                @endif
+                @if($overdueDetails->where('days_overdue', '<=', 30)->count() > 0)
+                    <div class="bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400 px-2 py-1 rounded">
+                        {{ $overdueDetails->where('days_overdue', '<=', 30)->count() }} payments pending
+                    </div>
+                @endif
+                @if($overdueCount == 0)
+                    <div class="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 px-2 py-1 rounded">
+                        All payments on time
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -74,15 +83,15 @@
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Monthly Expenses</p>
-                <p class="text-2xl font-bold text-gray-900 dark:text-white">₱3,200</p>
-                <p class="text-xs text-red-600 dark:text-red-400 mt-1">
-                    <span class="inline-flex items-center">
-                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                        </svg>
-                        +₱800 vs last month
-                    </span>
-                </p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white">₱{{ number_format($monthlyExpenses, 2) }}</p>
+                        <p class="text-xs text-red-600 dark:text-red-400 mt-1">
+                            <span class="inline-flex items-center">
+                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                                {{ $expensesComparisonText }}
+                            </span>
+                        </p>
             </div>
             <div class="flex-shrink-0">
                 <div class="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center">
@@ -94,25 +103,22 @@
         </div>
         <div class="mt-4">
             <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-600 dark:text-gray-400">Budget: ₱4,000</span>
-                <span class="text-gray-600 dark:text-gray-400">80%</span>
+                <span class="text-gray-600 dark:text-gray-400">Budget: ₱{{ number_format($expensesBudget, 2) }}</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ $expensesBudgetPercentage }}%</span>
             </div>
             <div class="mt-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                <div class="bg-red-600 h-2 rounded-full" style="width: 80%"></div>
+                <div class="bg-red-600 h-2 rounded-full" style="width: {{ min($expensesBudgetPercentage, 100) }}%"></div>
             </div>
             <div class="mt-2 grid grid-cols-2 gap-1 text-xs">
-                <div class="bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400 px-2 py-1 rounded">
-                    ₱1,200 repairs
-                </div>
-                <div class="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 px-2 py-1 rounded">
-                    ₱800 utilities
-                </div>
-                <div class="bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 px-2 py-1 rounded">
-                    ₱600 labor
-                </div>
-                <div class="bg-gray-50 dark:bg-gray-900/20 text-gray-700 dark:text-gray-400 px-2 py-1 rounded">
-                    ₱600 other
-                </div>
+                @forelse($expensesByCategory as $category => $amount)
+                    <div class="bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400 px-2 py-1 rounded">
+                        ₱{{ number_format($amount, 2) }} {{ ucfirst($category) }}
+                    </div>
+                @empty
+                    <div class="bg-gray-50 dark:bg-gray-900/20 text-gray-700 dark:text-gray-400 px-2 py-1 rounded">
+                        No expenses this month
+                    </div>
+                @endforelse
             </div>
         </div>
     </div>
