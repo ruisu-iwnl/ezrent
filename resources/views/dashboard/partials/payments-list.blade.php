@@ -22,9 +22,8 @@
         </div>
         <div class="flex items-center gap-2">
             <select name="month_filter" class="rounded-md border-gray-300 dark:bg-gray-900 dark:border-gray-700 text-sm">
-                <option value="">All Months</option>
                 @foreach($availableMonths as $month)
-                    <option value="{{ $month['value'] }}" {{ $month['selected'] ? 'selected' : '' }}>
+                    <option value="{{ $month['value'] }}" {{ request('month_filter') == $month['value'] ? 'selected' : '' }}>
                         {{ $month['label'] }}
                     </option>
                 @endforeach

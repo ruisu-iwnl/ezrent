@@ -229,11 +229,8 @@ export function initializeTableFilters(config) {
 
             if (this.name === 'month_filter') {
                 const url = new URL(window.location);
-                if (this.value) {
-                    url.searchParams.set('month_filter', this.value);
-                } else {
-                    url.searchParams.delete('month_filter');
-                }
+                
+                url.searchParams.set('month_filter', this.value);
                 window.location.href = url.toString();
                 return;
             }

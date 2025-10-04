@@ -5,7 +5,7 @@ export function initializePaymentsFilter() {
         tableId: 'payments-table',
         searchPlaceholder: 'Search tenant or unit...',
         filterOptions: [],
-        filterLabel: 'All Months',
+        filterLabel: 'Current Month',
         searchFields: ['tenant', 'unit'],
         statusField: 'date',
         statsSelector: '.flex.items-center.gap-2.text-xs.text-gray-500',
