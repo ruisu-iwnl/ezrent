@@ -20,6 +20,20 @@ export function initializeTableFilters(config) {
     let searchTimeout;
     
     function filterTable() {
+        
+        const store = Alpine.store('ui');
+        const isEditing = store.editingRowId !== null;
+        
+        
+        if (isEditing) {
+            const rows = table.querySelectorAll('tbody tr[x-data]');
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+            updateStats(table, rows.length, '', '', statsSelector, config.customStatsFunction);
+            return;
+        }
+        
         const searchValue = searchInput ? searchInput.value.toLowerCase() : '';
         const filterValue = filterSelect ? filterSelect.value : '';
         
@@ -138,8 +152,42 @@ export function initializeTableFilters(config) {
          }
      }
     
+   
+    function updateInputStates() {
+        const store = Alpine.store('ui');
+        const isEditing = store.editingRowId !== null;
+        
+        const tableMapping = {
+            'units-table': 'unit',
+            'tenants-table': 'tenant',
+            'expenses-table': 'expense'
+        };
+        
+        const editingTableName = tableMapping[tableId];
+        const isThisTableEditing = isEditing && store.editingTable === editingTableName;
+        
+        if (searchInput) {
+            searchInput.disabled = isThisTableEditing;
+            searchInput.style.opacity = isThisTableEditing ? '0.5' : '1';
+        }
+        
+        if (filterSelect) {
+            filterSelect.disabled = isThisTableEditing;
+            filterSelect.style.opacity = isThisTableEditing ? '0.5' : '1';
+        }
+    }
+    
+   
+    Alpine.effect(() => {
+        const store = Alpine.store('ui');
+        store.editingRowId; 
+        store.editingTable; 
+        updateInputStates();
+    });
+    
     if (searchInput) {
         searchInput.addEventListener('input', function() {
+            if (this.disabled) return; 
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 filterTable();
@@ -149,6 +197,7 @@ export function initializeTableFilters(config) {
     
     if (filterSelect) {
         filterSelect.addEventListener('change', function() {
+            if (this.disabled) return; 
             filterTable();
         });
     }
