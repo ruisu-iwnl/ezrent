@@ -8,6 +8,7 @@ Alpine.store('ui', {
     showPayment: false,
     showUnit: false,
     showTenantAssign: false,
+    showExpense: false,
 });
 
 Alpine.start();

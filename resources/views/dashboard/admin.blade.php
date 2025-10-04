@@ -16,6 +16,11 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm-9 9a9 9 0 1 1 18 0Z"/></svg>
             <span>Add Tenant & Assign</span>
         </a>
+        <span class="h-4 w-px bg-gray-300 dark:bg-gray-700"></span>
+        <a role="button" @click="$store.ui.showExpense = true" class="inline-flex items-center gap-1 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            <span>Add Expense</span>
+        </a>
     </div>
     
     @include('dashboard.partials.payments-list')
@@ -26,4 +31,5 @@
     @include('dashboard.modals.add-payment')
     @include('dashboard.modals.add-unit')
     @include('dashboard.modals.add-tenant-assign')
+    @include('dashboard.modals.add-expense')
 </div>
