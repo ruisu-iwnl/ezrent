@@ -16,6 +16,7 @@ export function initializePaymentFilter() {
         statsSelector: '.flex.items-center.gap-2.text-xs.text-gray-500',
         customStatsFunction: function(table) {
             const totalRows = table.querySelectorAll('tbody tr[x-data]').length;
+            
             const cashCount = Array.from(table.querySelectorAll('tbody tr[x-data]')).filter(row => {
                 const methodCell = row.querySelector('td:nth-child(5)');
                 return methodCell && methodCell.textContent.toLowerCase().trim().startsWith('cash');

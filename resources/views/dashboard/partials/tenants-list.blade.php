@@ -74,7 +74,20 @@
                     </td>
                     <td class="px-4 py-3 font-medium">
                         @if($tenant->lease)
-                            ₱{{ number_format($tenant->lease->monthly_rent, 2) }}
+                            @php
+                                $referenceDate = $testDate ?: now();
+                                $remainingAmount = $tenant->lease->getRemainingAmountForMonth($referenceDate->year, $referenceDate->month);
+                                $totalPaid = $tenant->lease->getTotalPaidForMonth($referenceDate->year, $referenceDate->month);
+                            @endphp
+                            @if($remainingAmount <= 0)
+                                <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                    Paid
+                                </span>
+                            @else
+                                <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                    ₱{{ number_format($remainingAmount, 2) }}
+                                </span>
+                            @endif
                         @else
                             <span class="text-gray-500 italic">—</span>
                         @endif

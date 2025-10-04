@@ -3,7 +3,7 @@ import './bootstrap';
 import Alpine from 'alpinejs';
 import { initializeUnitEditing } from './unit-editing.js';
 import { initializeUnitsFilter } from './units-filter.js';
-import { initializePaymentsFilter } from './payments-filter.js';
+import { initializePaymentFilter } from './payment-filter.js';
 import { initializePaymentEditing } from './payment-editing.js';
 import { initializeTenantsFilter } from './tenants-filter.js';
 import { initializeTenantEditing } from './tenant-editing.js';
@@ -23,7 +23,7 @@ Alpine.store('ui', {
 
 initializeUnitEditing();
 initializeUnitsFilter();
-initializePaymentsFilter();
+initializePaymentFilter();
 initializePaymentEditing();
 initializeTenantsFilter();
 initializeTenantEditing();

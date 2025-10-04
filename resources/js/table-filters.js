@@ -141,24 +141,37 @@ export function initializeTableFilters(config) {
         return headerRow ? headerRow.querySelectorAll('th').length : 5;
     }
     
-     function updateStats(table, visibleCount, searchValue, filterValue, statsSelector, customStatsFunction) {
-         const statsElement = table.querySelector(statsSelector || '.flex.items-center.gap-2.text-xs.text-gray-500');
-         if (!statsElement) return;
-         
-         const saveCancelButtons = statsElement.querySelector('span.ml-4');
-         const saveCancelHTML = saveCancelButtons ? saveCancelButtons.outerHTML : '';
-         
-         if (searchValue || filterValue) {
-             statsElement.innerHTML = `<span>Showing: <span class="font-medium">${visibleCount} records</span></span><span class="text-indigo-600">(Filtered)</span>${saveCancelHTML}`;
-         } else {
-             if (customStatsFunction) {
-                 statsElement.innerHTML = customStatsFunction(table) + saveCancelHTML;
-             } else {
-                 const totalRows = table.querySelectorAll('tbody tr[x-data]').length;
-                 statsElement.innerHTML = `<span>Total: <span class="font-medium">${totalRows} records</span></span>${saveCancelHTML}`;
-             }
-         }
-     }
+    function updateStats(table, visibleCount, searchValue, filterValue, statsSelector, customStatsFunction) {
+        const statsElement = table.querySelector(statsSelector || '.flex.items-center.gap-2.text-xs.text-gray-500');
+        if (!statsElement) return;
+        
+        const saveCancelButtons = statsElement.querySelector('span.ml-4');
+        const saveCancelHTML = saveCancelButtons ? saveCancelButtons.outerHTML : '';
+        
+        if (searchValue || filterValue) {
+            statsElement.innerHTML = `<span>Showing: <span class="font-medium">${visibleCount} records</span></span><span class="text-indigo-600">(Filtered)</span>${saveCancelHTML}`;
+        } else {
+            if (customStatsFunction) {
+                if (table.id === 'payments-table') {
+                    const thisMonthCount = table.getAttribute('data-this-month-count') || '0';
+                    const customStats = customStatsFunction(table); 
+                    const modifiedStats = customStats.replace(
+                        '<span>Total: <span class="font-medium">',
+                        '<span>Total: <span class="font-medium">'
+                    ).replace(
+                        '</span></span>\n                <span>•</span>',
+                        '</span></span>\n                <span>•</span>\n                <span>This Month: <span class="font-medium text-green-600">' + thisMonthCount + '</span></span>\n                <span>•</span>'
+                    );
+                    statsElement.innerHTML = modifiedStats + saveCancelHTML;
+                } else {
+                    statsElement.innerHTML = customStatsFunction(table) + saveCancelHTML;
+                }
+            } else {
+                const totalRows = table.querySelectorAll('tbody tr[x-data]').length;
+                statsElement.innerHTML = `<span>Total: <span class="font-medium">${totalRows} records</span></span>${saveCancelHTML}`;
+            }
+        }
+    }
     
    
     function updateInputStates() {

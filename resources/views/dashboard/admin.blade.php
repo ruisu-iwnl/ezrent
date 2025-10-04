@@ -11,6 +11,35 @@
         </div>
     @endif
 
+    {{-- Development Helper: Date Override --}}
+    @if(config('app.debug'))
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h4 class="text-sm font-medium text-yellow-800">🛠️ Development Helper</h4>
+                    <p class="text-xs text-yellow-700 mt-1">Override current date for testing rent due system</p>
+                </div>
+                <form method="GET" class="flex items-center gap-2">
+                    <input type="date" name="test_date" value="{{ $testDate ? $testDate->format('Y-m-d') : '' }}" 
+                           class="text-xs border border-yellow-300 rounded px-2 py-1">
+                    <button type="submit" class="text-xs bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700">
+                        Test Date
+                    </button>
+                    @if($testDate)
+                        <a href="{{ route('dashboard') }}" class="text-xs bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700">
+                            Reset
+                        </a>
+                    @endif
+                </form>
+            </div>
+            @if($testDate)
+                <div class="mt-2 text-xs text-yellow-700">
+                    <strong>Testing as:</strong> {{ $testDate->format('F j, Y') }} ({{ $testDate->format('Y-m') }})
+                </div>
+            @endif
+        </div>
+    @endif
+
     @include('dashboard.partials.stats-overview')
 
     <div class="flex items-center gap-4 text-sm">
@@ -36,8 +65,8 @@
     </div>
     
     @include('dashboard.partials.payments-list')
-    @include('dashboard.partials.units-list')
     @include('dashboard.partials.tenants-list')
+    @include('dashboard.partials.units-list')
     @include('dashboard.partials.expenses-list')
 
     @include('dashboard.modals.add-payment')

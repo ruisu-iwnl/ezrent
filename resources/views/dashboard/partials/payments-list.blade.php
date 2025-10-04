@@ -1,11 +1,11 @@
-<div id="payments-table" class="bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700 rounded-lg">
+<div id="payments-table" class="bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700 rounded-lg" data-test-date="{{ $testDate ? $testDate->format('Y-m-d') : '' }}" data-this-month-count="{{ $payments->filter(function($payment) use ($testDate) { $referenceDate = $testDate ?: now(); return $payment->paid_at->year === $referenceDate->year && $payment->paid_at->month === $referenceDate->month; })->count() }}">
     <div class="px-4 py-3 border-b border-gray-200/60 dark:border-gray-700 flex items-center justify-between">
         <div class="flex items-center gap-4">
             <h4 class="font-medium">Payments Management</h4>
             <div class="flex items-center gap-2 text-xs text-gray-500">
                 <span>Total: <span class="font-medium">{{ $payments->count() }}</span></span>
                 <span>•</span>
-                <span>This Month: <span class="font-medium text-green-600">{{ $payments->where('paid_at', '>=', now()->startOfMonth())->count() }}</span></span>
+                <span>This Month: <span class="font-medium text-green-600">{{ $payments->filter(function($payment) use ($testDate) { $referenceDate = $testDate ?: now(); return $payment->paid_at->year === $referenceDate->year && $payment->paid_at->month === $referenceDate->month; })->count() }}</span></span>
                 <span>•</span>
                 <span>Cash: <span class="font-medium text-green-600">{{ $payments->where('method', 'cash')->count() }}</span></span>
                 <span>•</span>

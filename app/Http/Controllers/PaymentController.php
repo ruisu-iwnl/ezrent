@@ -39,6 +39,16 @@ class PaymentController extends Controller
             'payment.receipt' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
+        $lease = \App\Models\Lease::findOrFail($request->input('payment.lease_id'));
+        $paymentDate = \Carbon\Carbon::parse($request->input('payment.paid_at'));
+        $remainingAmount = $lease->getRemainingAmountForMonth($paymentDate->year, $paymentDate->month);
+        
+        if ($request->input('payment.amount') > $remainingAmount) {
+            return redirect()->back()
+                ->withErrors(['payment.amount' => "Payment amount cannot exceed remaining due amount of ₱" . number_format($remainingAmount, 2)])
+                ->withInput();
+        }
+
         DB::transaction(function () use ($request) {
             $receiptPath = null;
             if ($request->hasFile('payment.receipt')) {
@@ -86,6 +96,25 @@ class PaymentController extends Controller
             'payment.reference' => 'nullable|string|max:255',
             'payment.notes' => 'nullable|string|max:1000',
         ]);
+
+        // Get the lease and validate amount for edit
+        $lease = $payment->lease;
+        $paymentDate = $payment->paid_at;
+        
+        // Calculate remaining amount excluding current payment being edited
+        $otherPayments = $lease->payments()
+            ->whereYear('paid_at', $paymentDate->year)
+            ->whereMonth('paid_at', $paymentDate->month)
+            ->where('id', '!=', $payment->id)
+            ->sum('amount');
+            
+        $remainingAmount = $lease->monthly_rent - $otherPayments;
+        
+        if ($request->input('payment.amount') > $remainingAmount) {
+            return redirect()->back()
+                ->withErrors(['payment.amount' => "Payment amount cannot exceed remaining due amount of ₱" . number_format($remainingAmount, 2)])
+                ->withInput();
+        }
 
         $payment->update([
             'amount' => $request->input('payment.amount'),
