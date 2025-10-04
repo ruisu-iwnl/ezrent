@@ -1,5 +1,5 @@
-<div x-show="$store.ui.showPayment" x-cloak class="fixed inset-0 z-[110] flex items-center justify-center">
-    <div class="fixed inset-0 w-screen h-screen bg-black/60" @click="$store.ui.showPayment=false"></div>
+<div x-show="$store.ui.showPayment" x-cloak x-transition class="fixed inset-0 z-[110] flex items-center justify-center">
+    <div class="fixed inset-0 w-screen h-screen bg-black/60 transition-none" @click="$store.ui.showPayment=false"></div>
     <div class="relative z-[120] w-full max-w-2xl bg-white dark:bg-gray-800 rounded-lg shadow-lg">
         <div class="px-4 py-3 border-b border-gray-200/60 dark:border-gray-700 flex items-center justify-between">
             <h4 class="font-medium">Add Payment</h4>

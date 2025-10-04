@@ -1,5 +1,5 @@
-<div x-show="$store.ui.showTenantAssign" x-cloak class="fixed inset-0 z-[110] flex items-center justify-center">
-    <div class="fixed inset-0 w-screen h-screen bg-black/60" @click="$store.ui.showTenantAssign=false"></div>
+<div x-show="$store.ui.showTenantAssign" x-cloak x-transition class="fixed inset-0 z-[110] flex items-center justify-center">
+    <div class="fixed inset-0 w-screen h-screen bg-black/60 transition-none" @click="$store.ui.showTenantAssign=false"></div>
     <div class="relative z-[120] w-full max-w-4xl bg-white dark:bg-gray-800 rounded-lg shadow-lg">
         <form method="POST" action="{{ route('tenants.store') }}">
             @csrf

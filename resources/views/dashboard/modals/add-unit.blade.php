@@ -1,5 +1,5 @@
-<div x-show="$store.ui.showUnit" x-cloak class="fixed inset-0 z-[110] flex items-center justify-center">
-    <div class="fixed inset-0 w-screen h-screen bg-black/60" @click="$store.ui.showUnit=false"></div>
+<div x-show="$store.ui.showUnit" x-cloak x-transition class="fixed inset-0 z-[110] flex items-center justify-center">
+    <div class="fixed inset-0 w-screen h-screen bg-black/60 transition-none" @click="$store.ui.showUnit=false"></div>
     <div class="relative z-[120] w-full max-w-2xl bg-white dark:bg-gray-800 rounded-lg shadow-lg">
         <form method="POST" action="{{ route('units.store') }}">
             @csrf
