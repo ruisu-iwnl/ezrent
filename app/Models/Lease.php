@@ -17,6 +17,11 @@ class Lease extends Model
         'notes',
     ];
 
+    protected $casts = [
+        'start_date' => 'date',
+        'end_date' => 'date',
+    ];
+
     public function tenant()
     {
         return $this->belongsTo(Tenant::class);
@@ -106,5 +111,69 @@ class Lease extends Model
         }
         
         return 'due';
+    }
+
+    /**
+     * Check if lease is expired based on test date or current date
+     */
+    public function isExpired($testDate = null)
+    {
+        $referenceDate = $testDate ?: now();
+        return $this->end_date && $this->end_date->lt($referenceDate);
+    }
+
+    /**
+     * Check if lease is expiring soon (within specified days)
+     */
+    public function isExpiringSoon($days = 30, $testDate = null)
+    {
+        $referenceDate = $testDate ?: now();
+        
+        // Only check if lease is currently active
+        if ($this->getLeaseStatus($testDate) !== 'active') {
+            return false;
+        }
+        
+        return $this->end_date && 
+               $this->end_date->diffInDays($referenceDate) <= $days && 
+               $this->end_date->gte($referenceDate);
+    }
+
+    /**
+     * Get days until expiration (negative if expired)
+     */
+    public function getDaysUntilExpiration($testDate = null)
+    {
+        $referenceDate = $testDate ?: now();
+        if (!$this->end_date) return null;
+        
+        return round($referenceDate->diffInDays($this->end_date, false));
+    }
+
+    /**
+     * Get lease status based on test date or current date
+     */
+    public function getLeaseStatus($testDate = null)
+    {
+        $referenceDate = $testDate ?: now();
+        
+        if ($this->start_date && $this->end_date) {
+            if ($referenceDate->gte($this->start_date) && $referenceDate->lt($this->end_date)) {
+                return 'active';
+            } elseif ($referenceDate->gte($this->end_date)) {
+                return 'expired';
+            } else {
+                return 'future'; 
+            }
+        } elseif ($this->start_date && !$this->end_date) {
+            
+            if ($referenceDate->gte($this->start_date)) {
+                return 'active';
+            } else {
+                return 'future';
+            }
+        }
+        
+        return 'invalid'; 
     }
 }

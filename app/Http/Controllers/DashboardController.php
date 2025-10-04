@@ -39,13 +39,14 @@ class DashboardController extends Controller
             $expenses = UnitFeeLog::with(['unit', 'lease.tenant.user', 'logger'])->get();
 
             $allLeases = Lease::with(['tenant.user', 'unit'])
-                ->where(function($query) {
-                    $query->whereNull('end_date')
-                          ->orWhere('end_date', '>', now());
-                })
                 ->whereHas('tenant.user')
                 ->whereHas('unit')
                 ->get();
+
+            foreach ($units as $unit) {
+                $unit->handleExpiredLeases($testDate);
+                $unit->updateStatusFromLease($testDate);
+            }
 
             $leases = $allLeases->filter(function($lease) use ($testDate) {
                 return $lease->getRentDueStatus($testDate) === 'due';
@@ -145,7 +146,32 @@ class DashboardController extends Controller
                 ];
             });
 
-            return view('dashboard', compact('units', 'payments', 'tenants', 'expenses', 'leases', 'testDate', 'totalMonthlyRevenue', 'outstandingPayments', 'monthlyExpenses', 'revenueComparisonText', 'monthlyTarget', 'targetPercentage', 'overdueAmount', 'overdueCount', 'overdueDetails', 'expensesByCategory', 'expensesComparisonText', 'expensesBudget', 'expensesBudgetPercentage'));
+            $expiredLeases = $allLeases->filter(function($lease) use ($testDate) {
+                return $lease->isExpired($testDate);
+            });
+            
+            $expiringSoonLeases = $allLeases->filter(function($lease) use ($testDate) {
+                return $lease->isExpiringSoon(30, $testDate);
+            });
+            
+            $activeLeases = $allLeases->filter(function($lease) use ($testDate) {
+                return $lease->getLeaseStatus($testDate) === 'active';
+            });
+            
+            $expiredCount = $expiredLeases->count();
+            $expiringSoonCount = $expiringSoonLeases->count();
+            $activeCount = $activeLeases->count();
+            
+           
+            $expiringDetails = $expiringSoonLeases->map(function($lease) use ($testDate) {
+                return [
+                    'lease' => $lease,
+                    'days_until_expiration' => $lease->getDaysUntilExpiration($testDate),
+                    'expiration_date' => $lease->end_date->format('M j, Y')
+                ];
+            })->sortBy('days_until_expiration');
+
+            return view('dashboard', compact('units', 'payments', 'tenants', 'expenses', 'leases', 'testDate', 'totalMonthlyRevenue', 'outstandingPayments', 'monthlyExpenses', 'revenueComparisonText', 'monthlyTarget', 'targetPercentage', 'overdueAmount', 'overdueCount', 'overdueDetails', 'expensesByCategory', 'expensesComparisonText', 'expensesBudget', 'expensesBudgetPercentage', 'expiredCount', 'expiringSoonCount', 'activeCount', 'expiringDetails'));
         } else {
             $tenant = Tenant::where('user_id', $user->id)->with(['lease.unit'])->first();
 

@@ -27,4 +27,88 @@ class Unit extends Model
     {
         return $this->hasMany(UnitFeeLog::class);
     }
+
+    /**
+     * Update unit status based on active leases (respects test date)
+     */
+    public function updateStatusFromLease($testDate = null)
+    {
+        $referenceDate = $testDate ?: now();
+        
+        $activeLease = $this->leases()
+            ->where(function($query) use ($referenceDate) {
+                $query->whereNull('end_date')
+                      ->orWhere('end_date', '>', $referenceDate->toDateString());
+            })
+            ->where('start_date', '<=', $referenceDate->toDateString())
+            ->first();
+            
+        $newStatus = $activeLease ? 'occupied' : 'vacant';
+        
+        if ($this->status !== $newStatus) {
+            $this->update(['status' => $newStatus]);
+            return true; 
+        }
+        
+        return false; 
+    }
+
+    /**
+     * Handle expired leases - set tenants to former status
+     */
+    public function handleExpiredLeases($testDate = null)
+    {
+        $referenceDate = $testDate ?: now();
+        
+        $expiredLeases = $this->leases()
+            ->where('end_date', '<', $referenceDate->toDateString())
+            ->whereHas('tenant', function($query) {
+                $query->where('status', '!=', 'former');
+            })
+            ->get();
+            
+        foreach ($expiredLeases as $lease) {
+            $lease->tenant->update(['status' => 'former']);
+        }
+        
+        return $expiredLeases->count();
+    }
+
+    /**
+     * Get current lease status for this unit
+     */
+    public function getCurrentLeaseStatus($testDate = null)
+    {
+        $referenceDate = $testDate ?: now();
+        
+        $activeLease = $this->leases()
+            ->where(function($query) use ($referenceDate) {
+                $query->whereNull('end_date')
+                      ->orWhere('end_date', '>', $referenceDate->toDateString());
+            })
+            ->first();
+            
+        if (!$activeLease) {
+            return 'no_lease';
+        }
+        
+        return $activeLease->getLeaseStatus($testDate);
+    }
+
+    /**
+     * Check if unit has expiring lease
+     */
+    public function hasExpiringLease($days = 30, $testDate = null)
+    {
+        $referenceDate = $testDate ?: now();
+        
+        return $this->leases()
+            ->where(function($query) use ($referenceDate) {
+                $query->whereNull('end_date')
+                      ->orWhere('end_date', '>', $referenceDate->toDateString());
+            })
+            ->where('end_date', '<=', $referenceDate->copy()->addDays($days))
+            ->whereNotNull('end_date')
+            ->exists();
+    }
 }
