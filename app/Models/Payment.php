@@ -16,6 +16,10 @@ class Payment extends Model
         'notes',
     ];
 
+    protected $casts = [
+        'paid_at' => 'datetime',
+    ];
+
     public function lease()
     {
         return $this->belongsTo(Lease::class);

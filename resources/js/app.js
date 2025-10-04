@@ -4,6 +4,7 @@ import Alpine from 'alpinejs';
 import { initializeUnitEditing } from './unit-editing.js';
 import { initializeUnitsFilter } from './units-filter.js';
 import { initializePaymentsFilter } from './payments-filter.js';
+import { initializePaymentEditing } from './payment-editing.js';
 import { initializeTenantsFilter } from './tenants-filter.js';
 import { initializeTenantEditing } from './tenant-editing.js';
 import { initializeExpenseEditing } from './expense-editing.js';
@@ -23,6 +24,7 @@ Alpine.store('ui', {
 initializeUnitEditing();
 initializeUnitsFilter();
 initializePaymentsFilter();
+initializePaymentEditing();
 initializeTenantsFilter();
 initializeTenantEditing();
 initializeExpenseEditing();

@@ -34,8 +34,16 @@ class DashboardController extends Controller
             $payments = Payment::with(['lease.tenant.user', 'lease.unit'])->latest()->take(10)->get();
             $tenants = Tenant::with(['user', 'lease.unit'])->get();
             $expenses = UnitFeeLog::with(['unit', 'lease.tenant.user', 'logger'])->latest()->take(10)->get();
+            $leases = Lease::with(['tenant.user', 'unit'])
+                ->where(function($query) {
+                    $query->whereNull('end_date')
+                          ->orWhere('end_date', '>', now());
+                })
+                ->whereHas('tenant.user')
+                ->whereHas('unit')
+                ->get();
 
-            return view('dashboard', compact('units', 'payments', 'tenants', 'expenses'));
+            return view('dashboard', compact('units', 'payments', 'tenants', 'expenses', 'leases'));
         } else {
             $tenant = Tenant::where('user_id', $user->id)->with(['lease.unit'])->first();
 

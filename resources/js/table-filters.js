@@ -13,7 +13,7 @@ export function initializeTableFilters(config) {
     if (!table) return;
     
     const searchInput = table.querySelector('input[name="search"]');
-    const filterSelect = table.querySelector('select[name="status_filter"]') || table.querySelector('select[name="category_filter"]');
+    const filterSelect = table.querySelector('select[name="status_filter"]') || table.querySelector('select[name="category_filter"]') || table.querySelector('select[name="method_filter"]');
     
     if (!searchInput && !filterSelect) return;
     
@@ -114,6 +114,12 @@ export function initializeTableFilters(config) {
                 'description': 2,
                 'category': 1
             };
+        } else if (tableId === 'payments-table') {
+            fieldMap = {
+                'tenant': 1,
+                'unit': 2,
+                'method': 4
+            };
         } else {
 
             fieldMap = {
@@ -162,7 +168,8 @@ export function initializeTableFilters(config) {
         const tableMapping = {
             'units-table': 'unit',
             'tenants-table': 'tenant',
-            'expenses-table': 'expense'
+            'expenses-table': 'expense',
+            'payments-table': 'payment'
         };
         
         const editingTableName = tableMapping[tableId];
