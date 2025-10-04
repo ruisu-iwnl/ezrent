@@ -6,7 +6,8 @@ export function initializeTenantsFilter() {
         searchPlaceholder: 'Search tenant name...',
         filterOptions: [
             { value: 'active', label: 'Active' },
-            { value: 'inactive', label: 'Inactive' }
+            { value: 'inactive', label: 'Inactive' },
+            { value: 'former', label: 'Former' }
         ],
         filterLabel: 'All Status',
         searchFields: ['name', 'email'],
@@ -22,13 +23,19 @@ export function initializeTenantsFilter() {
                 const statusCell = row.querySelector('td:nth-child(5)');
                 return statusCell && statusCell.textContent.toLowerCase().includes('inactive');
             }).length;
+            const formerCount = Array.from(table.querySelectorAll('tbody tr[x-data]')).filter(row => {
+                const statusCell = row.querySelector('td:nth-child(5)');
+                return statusCell && statusCell.textContent.toLowerCase().includes('former');
+            }).length;
             
             return `
-                <span>Total: <span class="font-medium">${totalRows} tenants</span></span>
+                <span>Total: <span class="font-medium">${totalRows}</span></span>
                 <span>•</span>
                 <span>Active: <span class="font-medium text-green-600">${activeCount}</span></span>
                 <span>•</span>
                 <span>Inactive: <span class="font-medium text-gray-600">${inactiveCount}</span></span>
+                <span>•</span>
+                <span>Former: <span class="font-medium text-blue-600">${formerCount}</span></span>
             `;
         }
     });
