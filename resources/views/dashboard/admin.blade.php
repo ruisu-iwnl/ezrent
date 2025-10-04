@@ -13,16 +13,16 @@
 
     {{-- Development Helper: Date Override --}}
     @if(config('app.debug'))
-        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <div class="bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700 rounded-lg p-4 mb-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h4 class="text-sm font-medium text-yellow-800">🛠️ Development Helper</h4>
-                    <p class="text-xs text-yellow-700 mt-1">Override current date for testing rent due system</p>
+                    <h4 class="font-medium">🛠️ Development Helper</h4>
+                    <p class="text-xs text-gray-500 mt-1">Override current date for testing rent due system</p>
                 </div>
                 <form method="GET" class="flex items-center gap-2">
                     <input type="date" name="test_date" value="{{ $testDate ? $testDate->format('Y-m-d') : '' }}" 
-                           class="text-xs border border-yellow-300 rounded px-2 py-1">
-                    <button type="submit" class="text-xs bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700">
+                           class="text-xs border-gray-300 dark:bg-gray-900 dark:border-gray-700 rounded px-2 py-1">
+                    <button type="submit" class="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
                         Test Date
                     </button>
                     @if($testDate)
@@ -33,7 +33,7 @@
                 </form>
             </div>
             @if($testDate)
-                <div class="mt-2 text-xs text-yellow-700">
+                <div class="mt-2 text-xs text-gray-500">
                     <strong>Testing as:</strong> {{ $testDate->format('F j, Y') }} ({{ $testDate->format('Y-m') }})
                 </div>
             @endif
