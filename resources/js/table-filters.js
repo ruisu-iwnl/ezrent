@@ -139,15 +139,17 @@ export function initializeTableFilters(config) {
          const statsElement = table.querySelector(statsSelector || '.flex.items-center.gap-2.text-xs.text-gray-500');
          if (!statsElement) return;
          
+         const saveCancelButtons = statsElement.querySelector('span.ml-4');
+         const saveCancelHTML = saveCancelButtons ? saveCancelButtons.outerHTML : '';
+         
          if (searchValue || filterValue) {
-             statsElement.innerHTML = `<span>Showing: <span class="font-medium">${visibleCount} records</span></span><span class="text-indigo-600">(Filtered)</span>`;
+             statsElement.innerHTML = `<span>Showing: <span class="font-medium">${visibleCount} records</span></span><span class="text-indigo-600">(Filtered)</span>${saveCancelHTML}`;
          } else {
-
              if (customStatsFunction) {
-                 statsElement.innerHTML = customStatsFunction(table);
+                 statsElement.innerHTML = customStatsFunction(table) + saveCancelHTML;
              } else {
                  const totalRows = table.querySelectorAll('tbody tr[x-data]').length;
-                 statsElement.innerHTML = `<span>Total: <span class="font-medium">${totalRows} records</span></span>`;
+                 statsElement.innerHTML = `<span>Total: <span class="font-medium">${totalRows} records</span></span>${saveCancelHTML}`;
              }
          }
      }
