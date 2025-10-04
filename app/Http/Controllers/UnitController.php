@@ -28,7 +28,20 @@ class UnitController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'unit.code' => 'required|string|max:255|unique:units,code',
+            'unit.status' => 'required|in:vacant,maintenance',
+            'unit.description' => 'nullable|string|max:1000',
+        ]);
+
+        Unit::create([
+            'admin_id' => auth()->id(),
+            'code' => $request->input('unit.code'),
+            'status' => $request->input('unit.status'),
+            'description' => $request->input('unit.description'),
+        ]);
+
+        return redirect()->route('dashboard')->with('success', 'Unit created successfully!');
     }
 
     /**
@@ -52,7 +65,19 @@ class UnitController extends Controller
      */
     public function update(Request $request, Unit $unit)
     {
-        //
+        $request->validate([
+            'unit.code' => 'required|string|max:255|unique:units,code,' . $unit->id,
+            'unit.status' => 'required|in:vacant,maintenance',
+            'unit.description' => 'nullable|string|max:1000',
+        ]);
+
+        $unit->update([
+            'code' => $request->input('unit.code'),
+            'status' => $request->input('unit.status'),
+            'description' => $request->input('unit.description'),
+        ]);
+
+        return redirect()->route('dashboard')->with('success', 'Unit updated successfully!');
     }
 
     /**

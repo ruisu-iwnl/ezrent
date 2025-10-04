@@ -3,13 +3,17 @@
         <div class="flex items-center gap-4">
             <h4 class="font-medium">Units Management</h4>
             <div class="flex items-center gap-2 text-xs text-gray-500">
-                <span>Total: <span class="font-medium">8</span></span>
+                <span>Total: <span class="font-medium">{{ $units->count() }} units</span></span>
                 <span>•</span>
-                <span>Vacant: <span class="font-medium text-green-600">5</span></span>
+                <span>Vacant: <span class="font-medium text-green-600">{{ $units->where('status', 'vacant')->count() }}</span></span>
                 <span>•</span>
-                <span>Occupied: <span class="font-medium text-blue-600">2</span></span>
+                <span>Occupied: <span class="font-medium text-blue-600">{{ $units->where('status', 'occupied')->count() }}</span></span>
                 <span>•</span>
-                <span>Maintenance: <span class="font-medium text-orange-600">1</span></span>
+                <span>Maintenance: <span class="font-medium text-orange-600">{{ $units->where('status', 'maintenance')->count() }}</span></span>
+                    <span class="ml-4" x-show="$store.ui.editingRowId" x-transition>
+                        <button @click="saveCurrentRecord()" class="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">Save</button>
+                        <button @click="cancelEditing()" class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600 ml-1">Cancel</button>
+                    </span>
             </div>
         </div>
         <div class="flex items-center gap-2">
@@ -34,38 +38,59 @@
                 </tr>
             </thead>
             <tbody>
-                <tr class="border-t border-gray-200/60 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                    <td class="px-4 py-3 font-medium">A-201</td>
-                    <td class="px-4 py-3">
-                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">Occupied</span>
+                @forelse($units as $unit)
+                <tr class="border-t border-gray-200/60 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50" 
+                    x-data="{ unit: {{ $unit->toJson() }}, editing: false }"
+                    data-original-code="{{ $unit->code }}"
+                    data-original-status="{{ $unit->status }}"
+                    data-original-description="{{ $unit->description }}">
+                    <td class="px-4 py-3 font-medium">
+                        <div x-show="!editing" @click="editing = true; $store.ui.editingRowId = unit.id" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400">{{ $unit->code }}</div>
+                        <input x-show="editing" x-model="unit.code" type="text" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" @click.stop>
                     </td>
-                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">2-bedroom apartment, city view</td>
                     <td class="px-4 py-3">
-                        <div class="flex flex-col">
-                            <span class="font-medium">John Tenant</span>
-                            <span class="text-xs text-gray-500">john@email.com</span>
+                        <div x-show="!editing" @click="editing = true; $store.ui.editingRowId = unit.id" class="cursor-pointer">
+                            @if($unit->status === 'vacant')
+                                <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Vacant</span>
+                            @elseif($unit->status === 'occupied')
+                                <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">Occupied</span>
+                            @else
+                                <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">Maintenance</span>
+                            @endif
                         </div>
+                        <select x-show="editing" x-model="unit.status" class="text-xs px-2 py-1 border rounded dark:bg-gray-700 dark:border-gray-600" @click.stop>
+                            <option value="vacant">Vacant</option>
+                            <option value="maintenance">Maintenance</option>
+                        </select>
                     </td>
-                    <td class="px-4 py-3 font-medium">₱10,000</td>
-                </tr>
-                <tr class="border-t border-gray-200/60 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                    <td class="px-4 py-3 font-medium">A-202</td>
+                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
+                        <div x-show="!editing" @click="editing = true; $store.ui.editingRowId = unit.id" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400">{{ $unit->description ?? 'Click to add description' }}</div>
+                        <textarea x-show="editing" x-model="unit.description" rows="2" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" @click.stop></textarea>
+                    </td>
                     <td class="px-4 py-3">
-                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Vacant</span>
+                        @if($unit->leases->isNotEmpty())
+                            @php($currentLease = $unit->leases->first())
+                            <div class="flex flex-col">
+                                <span class="font-medium">{{ $currentLease->tenant->user->name }}</span>
+                                <span class="text-xs text-gray-500">{{ $currentLease->tenant->user->email }}</span>
+                            </div>
+                        @else
+                            <span class="text-gray-500 italic">Vacant</span>
+                        @endif
                     </td>
-                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">1-bedroom studio unit</td>
-                    <td class="px-4 py-3 text-gray-500 italic">Available</td>
-                    <td class="px-4 py-3 font-medium text-gray-500">—</td>
-                </tr>
-                <tr class="border-t border-gray-200/60 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                    <td class="px-4 py-3 font-medium">B-101</td>
-                    <td class="px-4 py-3">
-                        <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">Maintenance</span>
+                    <td class="px-4 py-3 font-medium">
+                        @if($unit->leases->isNotEmpty())
+                            ₱{{ number_format($unit->leases->first()->monthly_rent, 2) }}
+                        @else
+                            <span class="text-gray-500">—</span>
+                        @endif
                     </td>
-                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">3-bedroom ground floor unit</td>
-                    <td class="px-4 py-3 text-gray-500 italic">Under repair</td>
-                    <td class="px-4 py-3 font-medium text-gray-500">—</td>
                 </tr>
+                @empty
+                <tr>
+                    <td colspan="5" class="px-4 py-8 text-center text-gray-500">No units found. Create your first unit using the "Add Unit" button above.</td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
