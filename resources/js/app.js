@@ -2,6 +2,8 @@ import './bootstrap';
 
 import Alpine from 'alpinejs';
 import { initializeUnitEditing } from './unit-editing.js';
+import { initializeUnitsFilter } from './units-filter.js';
+import { initializePaymentsFilter } from './payments-filter.js';
 
 window.Alpine = Alpine;
 
@@ -14,5 +16,7 @@ Alpine.store('ui', {
 });
 
 initializeUnitEditing();
+initializeUnitsFilter();
+initializePaymentsFilter();
 
 Alpine.start();

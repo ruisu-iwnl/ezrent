@@ -1,15 +1,19 @@
-<div class="bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700 rounded-lg">
+<div id="units-table" class="bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700 rounded-lg">
     <div class="px-4 py-3 border-b border-gray-200/60 dark:border-gray-700 flex items-center justify-between">
         <div class="flex items-center gap-4">
             <h4 class="font-medium">Units Management</h4>
-            <div class="flex items-center gap-2 text-xs text-gray-500">
-                <span>Total: <span class="font-medium">{{ $units->count() }} units</span></span>
-                <span>•</span>
-                <span>Vacant: <span class="font-medium text-green-600">{{ $units->where('status', 'vacant')->count() }}</span></span>
-                <span>•</span>
-                <span>Occupied: <span class="font-medium text-blue-600">{{ $units->where('status', 'occupied')->count() }}</span></span>
-                <span>•</span>
-                <span>Maintenance: <span class="font-medium text-orange-600">{{ $units->where('status', 'maintenance')->count() }}</span></span>
+                <div class="flex items-center gap-2 text-xs text-gray-500">
+                    <span>Showing: <span class="font-medium">{{ $units->count() }} units</span></span>
+                    @if(request('status_filter') || request('search'))
+                        <span class="text-indigo-600">(Filtered)</span>
+                    @else
+                        <span>•</span>
+                        <span>Vacant: <span class="font-medium text-green-600">{{ $units->where('status', 'vacant')->count() }}</span></span>
+                        <span>•</span>
+                        <span>Occupied: <span class="font-medium text-blue-600">{{ $units->where('status', 'occupied')->count() }}</span></span>
+                        <span>•</span>
+                        <span>Maintenance: <span class="font-medium text-orange-600">{{ $units->where('status', 'maintenance')->count() }}</span></span>
+                    @endif
                     <span class="ml-4" x-show="$store.ui.editingRowId" x-transition>
                         <button @click="saveCurrentRecord()" class="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">Save</button>
                         <button @click="cancelEditing()" class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600 ml-1">Cancel</button>
@@ -19,11 +23,11 @@
         <div class="flex items-center gap-2">
             <select name="status_filter" class="rounded-md border-gray-300 dark:bg-gray-900 dark:border-gray-700 text-sm">
                 <option value="">All Status</option>
-                <option value="vacant">Vacant</option>
-                <option value="occupied">Occupied</option>
-                <option value="maintenance">Maintenance</option>
+                <option value="vacant" {{ request('status_filter') === 'vacant' ? 'selected' : '' }}>Vacant</option>
+                <option value="occupied" {{ request('status_filter') === 'occupied' ? 'selected' : '' }}>Occupied</option>
+                <option value="maintenance" {{ request('status_filter') === 'maintenance' ? 'selected' : '' }}>Maintenance</option>
             </select>
-            <input type="text" placeholder="Search unit code..." class="rounded-md border-gray-300 dark:bg-gray-900 dark:border-gray-700 text-sm w-48">
+            <input type="text" name="search" placeholder="Search unit code..." value="{{ request('search') }}" class="rounded-md border-gray-300 dark:bg-gray-900 dark:border-gray-700 text-sm w-48">
         </div>
     </div>
     <div class="overflow-x-auto">
