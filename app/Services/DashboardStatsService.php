@@ -19,21 +19,21 @@ class DashboardStatsService
         $previousYear = $previousMonth->year;
         $previousMonthNumber = $previousMonth->month;
         
-        // Revenue calculations
         $totalMonthlyRevenue = $this->calculateMonthlyRevenue($payments, $currentYear, $currentMonth);
         $previousMonthRevenue = $this->calculateMonthlyRevenue($payments, $previousYear, $previousMonthNumber);
         $revenueDifference = $totalMonthlyRevenue - $previousMonthRevenue;
         $revenueComparison = $revenueDifference >= 0 ? '+' : '';
         $revenueComparisonText = $revenueComparison . '₱' . number_format(abs($revenueDifference), 2) . ' vs last month';
         
-        // Outstanding payments
         $outstandingPayments = $this->calculateOutstandingPayments($allLeases, $currentYear, $currentMonth, $testDate);
+        $previousMonthOutstanding = $this->calculateOutstandingPayments($allLeases, $previousYear, $previousMonthNumber, $testDate);
+        $outstandingDifference = $outstandingPayments - $previousMonthOutstanding;
+        $outstandingComparison = $outstandingDifference >= 0 ? '+' : '';
+        $outstandingComparisonText = $outstandingComparison . '₱' . number_format(abs($outstandingDifference), 2) . ' vs last month';
         
-        // Monthly target
         $monthlyTarget = $this->calculateMonthlyTarget($allLeases, $testDate);
         $targetPercentage = $monthlyTarget > 0 ? round(($totalMonthlyRevenue / $monthlyTarget) * 100) : 0;
         
-        // Expense calculations
         $expenseStats = $this->calculateExpenseStats($expenses, $currentYear, $currentMonth);
         
         return [
@@ -41,6 +41,7 @@ class DashboardStatsService
             'previousMonthRevenue' => $previousMonthRevenue,
             'revenueComparisonText' => $revenueComparisonText,
             'outstandingPayments' => $outstandingPayments,
+            'outstandingComparisonText' => $outstandingComparisonText,
             'monthlyTarget' => $monthlyTarget,
             'targetPercentage' => $targetPercentage,
             'monthlyExpenses' => $expenseStats['monthlyExpenses'],

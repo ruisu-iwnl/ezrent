@@ -37,12 +37,18 @@
             <div>
                 <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Outstanding Payments</p>
                 <p class="text-2xl font-bold text-gray-900 dark:text-white">₱{{ number_format($outstandingPayments, 2) }}</p>
-                <p class="text-xs text-orange-600 dark:text-orange-400 mt-1">
+                <p class="text-xs {{ str_starts_with($outstandingComparisonText, '+') ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400' }} mt-1">
                     <span class="inline-flex items-center">
-                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-                        </svg>
-                        +₱1,500 vs last month
+                        @if(str_starts_with($outstandingComparisonText, '+'))
+                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                        @else
+                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                        @endif
+                        {{ $outstandingComparisonText }}
                     </span>
                 </p>
             </div>
