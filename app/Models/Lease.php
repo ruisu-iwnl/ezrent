@@ -115,11 +115,12 @@ class Lease extends Model
 
     /**
      * Check if lease is expired based on test date or current date
+     * Lease expires the day AFTER the end_date (so it's still active on end_date)
      */
     public function isExpired($testDate = null)
     {
         $referenceDate = $testDate ?: now();
-        return $this->end_date && $this->end_date->lt($referenceDate);
+        return $this->end_date && $this->end_date->lt($referenceDate->toDateString());
     }
 
     /**
@@ -152,15 +153,16 @@ class Lease extends Model
 
     /**
      * Get lease status based on test date or current date
+     * Lease remains active on the end_date and expires the day after
      */
     public function getLeaseStatus($testDate = null)
     {
         $referenceDate = $testDate ?: now();
         
         if ($this->start_date && $this->end_date) {
-            if ($referenceDate->gte($this->start_date) && $referenceDate->lt($this->end_date)) {
+            if ($referenceDate->gte($this->start_date) && $referenceDate->lte($this->end_date)) {
                 return 'active';
-            } elseif ($referenceDate->gte($this->end_date)) {
+            } elseif ($referenceDate->gt($this->end_date)) {
                 return 'expired';
             } else {
                 return 'future'; 

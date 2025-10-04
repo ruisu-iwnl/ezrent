@@ -34,6 +34,12 @@ class DashboardController extends Controller
             $unit->handleExpiredLeases($testDate);
             $unit->updateStatusFromLease($testDate);
         }
+        
+        $data['units'] = Unit::with(['leases.tenant.user', 'admin'])->get();
+        $data['allLeases'] = Lease::with(['tenant.user', 'unit'])
+            ->whereHas('tenant.user')
+            ->whereHas('unit')
+            ->get();
 
         $statsService = new DashboardStatsService();
         $stats = $statsService->calculateMonthlyStats(

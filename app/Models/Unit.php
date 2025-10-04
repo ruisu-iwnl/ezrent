@@ -31,6 +31,7 @@ class Unit extends Model
     /**
      * Get the relevant lease for a unit at a given date
      * Returns the lease if it's active or scheduled for the future
+     * Lease remains active on the end_date
      */
     public function getRelevantLease($testDate = null)
     {
@@ -42,7 +43,7 @@ class Unit extends Model
                     $q->where('start_date', '<=', $referenceDate->toDateString())
                       ->where(function($qq) use ($referenceDate) {
                           $qq->whereNull('end_date')
-                             ->orWhere('end_date', '>', $referenceDate->toDateString());
+                             ->orWhere('end_date', '>=', $referenceDate->toDateString());
                       });
                 })
                 ->orWhere('start_date', '>', $referenceDate->toDateString());
@@ -72,13 +73,14 @@ class Unit extends Model
 
     /**
      * Handle expired leases - set tenants to former status
+     * Tenants remain active on expiration date and become former the day after
      */
     public function handleExpiredLeases($testDate = null)
     {
         $referenceDate = $testDate ?: now();
         
         $expiredLeases = $this->leases()
-            ->where('end_date', '<', $referenceDate->toDateString())
+            ->where('end_date', '<', $referenceDate->copy()->subDay()->toDateString())
             ->whereHas('tenant', function($query) {
                 $query->where('status', '!=', 'former');
             })
@@ -101,7 +103,7 @@ class Unit extends Model
         $activeLease = $this->leases()
             ->where(function($query) use ($referenceDate) {
                 $query->whereNull('end_date')
-                      ->orWhere('end_date', '>', $referenceDate->toDateString());
+                      ->orWhere('end_date', '>=', $referenceDate->toDateString());
             })
             ->first();
             
@@ -122,7 +124,7 @@ class Unit extends Model
         return $this->leases()
             ->where(function($query) use ($referenceDate) {
                 $query->whereNull('end_date')
-                      ->orWhere('end_date', '>', $referenceDate->toDateString());
+                      ->orWhere('end_date', '>=', $referenceDate->toDateString());
             })
             ->where('end_date', '<=', $referenceDate->copy()->addDays($days))
             ->whereNotNull('end_date')
