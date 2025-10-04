@@ -60,9 +60,11 @@ class DashboardStatsService
     
     private function calculateOutstandingPayments($allLeases, $currentYear, $currentMonth, $testDate)
     {
-        return $allLeases->filter(function($lease) use ($testDate) {
-            return $lease->getLeaseStatus($testDate) === 'active';
+        return $allLeases->filter(function($lease) use ($testDate, $currentYear, $currentMonth) {
+
+            return $lease->tenant->status === 'active';
         })->sum(function($lease) use ($currentYear, $currentMonth) {
+
             return $lease->getRemainingAmountForMonth($currentYear, $currentMonth);
         });
     }
