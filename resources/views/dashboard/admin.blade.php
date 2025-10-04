@@ -17,10 +17,11 @@
             <span>Add Tenant & Assign</span>
         </a>
     </div>
-  
+    
     @include('dashboard.partials.payments-list')
     @include('dashboard.partials.units-list')
     @include('dashboard.partials.tenants-list')
+    @include('dashboard.partials.expenses-list')
 
     @include('dashboard.modals.add-payment')
     @include('dashboard.modals.add-unit')

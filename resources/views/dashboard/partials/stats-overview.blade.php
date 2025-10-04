@@ -1,4 +1,4 @@
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
     <div class="bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700 rounded-lg p-6">
         <div class="flex items-center justify-between">
             <div>
@@ -65,6 +65,53 @@
                 </div>
                 <div class="bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400 px-2 py-1 rounded">
                     2 payments pending
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700 rounded-lg p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Monthly Expenses</p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white">₱3,200</p>
+                <p class="text-xs text-red-600 dark:text-red-400 mt-1">
+                    <span class="inline-flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                        +₱800 vs last month
+                    </span>
+                </p>
+            </div>
+            <div class="flex-shrink-0">
+                <div class="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4">
+            <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600 dark:text-gray-400">Budget: ₱4,000</span>
+                <span class="text-gray-600 dark:text-gray-400">80%</span>
+            </div>
+            <div class="mt-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div class="bg-red-600 h-2 rounded-full" style="width: 80%"></div>
+            </div>
+            <div class="mt-2 grid grid-cols-2 gap-1 text-xs">
+                <div class="bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400 px-2 py-1 rounded">
+                    ₱1,200 repairs
+                </div>
+                <div class="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 px-2 py-1 rounded">
+                    ₱800 utilities
+                </div>
+                <div class="bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 px-2 py-1 rounded">
+                    ₱600 labor
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-900/20 text-gray-700 dark:text-gray-400 px-2 py-1 rounded">
+                    ₱600 other
                 </div>
             </div>
         </div>
