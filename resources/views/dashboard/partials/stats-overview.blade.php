@@ -1,4 +1,4 @@
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
     <div class="bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700 rounded-lg p-6">
         <div class="flex items-center justify-between">
             <div>
@@ -119,6 +119,52 @@
                         No expenses this month
                     </div>
                 @endforelse
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700 rounded-lg p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Lease Status</p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $activeCount }} Active</p>
+                <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                    <span class="inline-flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                        </svg>
+                        {{ $expiringSoonCount }} expiring soon
+                    </span>
+                </p>
+            </div>
+            <div class="flex-shrink-0">
+                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4">
+            <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600 dark:text-gray-400">Expired: {{ $expiredCount }}</span>
+                <span class="text-gray-600 dark:text-gray-400">Total: {{ $activeCount + $expiredCount + $expiringSoonCount }}</span>
+            </div>
+            <div class="mt-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div class="bg-blue-600 h-2 rounded-full" style="width: {{ $activeCount + $expiredCount + $expiringSoonCount > 0 ? round(($activeCount / ($activeCount + $expiredCount + $expiringSoonCount)) * 100) : 0 }}%"></div>
+            </div>
+            <div class="mt-2 grid grid-cols-2 gap-1 text-xs">
+                @if($expiringDetails->count() > 0)
+                    @foreach($expiringDetails->take(2) as $detail)
+                        <div class="bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400 px-2 py-1 rounded">
+                            {{ $detail['lease']->tenant->user->name ?? 'Unknown' }} - {{ $detail['days_until_expiration'] }} days
+                        </div>
+                    @endforeach
+                @else
+                    <div class="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 px-2 py-1 rounded">
+                        No expiring leases
+                    </div>
+                @endif
             </div>
         </div>
     </div>
