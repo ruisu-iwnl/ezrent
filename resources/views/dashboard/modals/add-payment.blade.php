@@ -1,9 +1,9 @@
 <div x-show="$store.ui.showPayment || @js($errors->any())" x-cloak x-transition class="fixed inset-0 z-[110] flex items-center justify-center">
-    <div class="fixed inset-0 w-screen h-screen bg-black/60 transition-none" @click="$store.ui.showPayment=false; window.location.href='{{ route('dashboard') }}'"></div>
+    <div class="fixed inset-0 w-screen h-screen bg-black/60 transition-none" @click="$store.ui.showPayment=false"></div>
     <div class="relative z-[120] w-full max-w-2xl bg-white dark:bg-gray-800 rounded-lg shadow-lg">
         <div class="px-4 py-3 border-b border-gray-200/60 dark:border-gray-700 flex items-center justify-between">
             <h4 class="font-medium">Add Payment</h4>
-            <button class="text-gray-500" @click="$store.ui.showPayment=false; window.location.href='{{ route('dashboard') }}'">✕</button>
+            <button class="text-gray-500" @click="$store.ui.showPayment=false">✕</button>
         </div>
         <form method="POST" action="{{ route('payments.store') }}" enctype="multipart/form-data">
             @csrf
@@ -83,7 +83,7 @@
                 </div>
             </div>
             <div class="px-4 pb-4 flex items-center justify-end gap-2">
-                <button type="button" class="px-3 py-2 rounded-md border" @click="$store.ui.showPayment=false; window.location.href='{{ route('dashboard') }}'">Cancel</button>
+                <button type="button" class="px-3 py-2 rounded-md border" @click="$store.ui.showPayment=false">Cancel</button>
                 <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Record Payment</button>
             </div>
         </form>
