@@ -6,9 +6,11 @@ use App\Models\User;
 use App\Models\Tenant;
 use App\Models\Lease;
 use App\Models\Unit;
+use App\Mail\TenantCredentialsMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class TenantController extends Controller
 {
@@ -30,14 +32,24 @@ class TenantController extends Controller
             'lease.notes' => 'nullable|string|max:1000',
         ]);
 
-        DB::transaction(function () use ($request) {
+        // Extract last name from full name
+        $fullName = $request->input('user.name');
+        $nameParts = explode(' ', trim($fullName));
+        $lastName = end($nameParts); // Get the last part (last name)
+        
+        // Format lease start date as YYYYMMDD
+        $startDate = \Carbon\Carbon::parse($request->input('lease.start_date'));
+        $dateFormatted = $startDate->format('Ymd');
+        
+        // Generate password: lastname + YYYYMMDD
+        $generatedPassword = strtolower($lastName) . $dateFormatted;
 
+        DB::transaction(function () use ($request, $generatedPassword) {
 
-            //this is the case for now. i will edit this soon.
             $user = User::create([
                 'name' => $request->input('user.name'),
                 'email' => $request->input('user.email'),
-                'password' => Hash::make('password123'), 
+                'password' => Hash::make($generatedPassword), 
                 'role' => 'tenant',
             ]);
 
@@ -64,7 +76,19 @@ class TenantController extends Controller
             $unit->update(['status' => 'occupied']);
         });
 
-        return redirect()->route('dashboard')->with('success', 'Tenant created and assigned to unit successfully!');
+        try {
+            Mail::to($request->input('user.email'))->send(
+                new TenantCredentialsMail(
+                    $request->input('user.name'),
+                    $request->input('user.email'),
+                    $generatedPassword
+                )
+            );
+        } catch (\Exception $e) {
+            \Log::error('Failed to send tenant credentials email: ' . $e->getMessage());
+        }
+
+        return redirect()->route('dashboard')->with('success', 'Tenant created and assigned to unit successfully! Login credentials sent via email.');
     }
 
     public function update(Request $request, Tenant $tenant)
