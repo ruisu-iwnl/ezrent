@@ -56,7 +56,7 @@
                     </td>
                     <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
                         <div x-show="!editing" @click="startEditingTenant(tenant.id); editing = true" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400">{{ $tenant->address ?? 'Click to add address' }}</div>
-                        <textarea x-show="editing" x-cloak x-model="tenant.address" rows="2" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" placeholder="Address" @click.stop></textarea>
+                        <textarea x-show="editing" x-cloak x-model="tenant.address" rows="2" maxlength="100" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" placeholder="Address (max 100 chars)" @click.stop></textarea>
                     </td>
                     <td class="px-4 py-3">
                         <span class="inline-flex items-center px-2 py-1 rounded-md text-xs {{ $tenant->getStatusBadgeClass() }}">
@@ -101,8 +101,8 @@
                         @endif
                     </td>
                     <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
-                        <div x-show="!editing" @click="startEditingTenant(tenant.id); editing = true" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400">{{ $tenant->notes ?? 'Click to add notes' }}</div>
-                        <textarea x-show="editing" x-cloak x-model="tenant.notes" rows="2" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" placeholder="Notes" @click.stop></textarea>
+                        <div x-show="!editing" @click="startEditingTenant(tenant.id); editing = true" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400">{{ $tenant->notes ?? 'Click to add notes (max 100 chars)' }}</div>
+                        <textarea x-show="editing" x-cloak x-model="tenant.notes" rows="2" maxlength="100" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" placeholder="Notes (max 100 chars)" @click.stop></textarea>
                     </td>
                 </tr>
                 @empty

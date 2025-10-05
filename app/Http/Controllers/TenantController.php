@@ -16,20 +16,23 @@ class TenantController extends Controller
 {
     public function store(Request $request)
     {
-        $request->validate([
+        $request->validateWithBag('tenant', [
             'user.name' => 'required|string|max:255',
             'user.email' => 'required|email:rfc,dns|unique:users,email',
             'tenant.phone' => 'nullable|string|max:20',
             'tenant.date_of_birth' => 'nullable|date',
             'tenant.address' => 'nullable|string|max:500',
             'tenant.status' => 'required|in:active,inactive,former',
-            'tenant.notes' => 'nullable|string|max:1000',
+            'tenant.notes' => 'nullable|string|max:100',
             'lease.unit_id' => 'required|exists:units,id',
             'lease.start_date' => 'required|date',
             'lease.end_date' => 'nullable|date|after:lease.start_date|different:lease.start_date',
             'lease.monthly_rent' => 'required|numeric|min:0|max:99999999.99',
             'lease.security_deposit' => 'nullable|numeric|min:0|max:99999999.99',
-            'lease.notes' => 'nullable|string|max:1000',
+            'lease.notes' => 'nullable|string|max:100',
+        ], [
+            'lease.end_date.after' => 'End date must be after the start date.',
+            'lease.end_date.different' => 'End date cannot be the same as the start date.',
         ]);
 
         $fullName = $request->input('user.name');

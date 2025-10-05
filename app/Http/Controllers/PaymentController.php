@@ -30,7 +30,7 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $request->validateWithBag('payment', [
             'payment.lease_id' => 'required|exists:leases,id',
             'payment.amount' => 'required|numeric|min:0',
             'payment.paid_at' => 'required|date',
@@ -39,8 +39,10 @@ class PaymentController extends Controller
                 'nullable','string','max:255',
                 Rule::unique('payments','reference'),
             ],
-            'payment.notes' => 'nullable|string|max:1000',
+            'payment.notes' => 'nullable|string|max:100',
             'payment.receipt' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        ], [
+            'payment.reference.unique' => 'This payment reference already exists. Please use a different reference.',
         ]);
 
         $lease = \App\Models\Lease::findOrFail($request->input('payment.lease_id'));
@@ -94,14 +96,16 @@ class PaymentController extends Controller
      */
     public function update(Request $request, Payment $payment)
     {
-        $request->validate([
+        $request->validateWithBag('payment', [
             'payment.amount' => 'required|numeric|min:0',
             'payment.method' => 'required|string|max:255',
             'payment.reference' => [
                 'nullable','string','max:255',
                 Rule::unique('payments','reference')->ignore($payment->id),
             ],
-            'payment.notes' => 'nullable|string|max:1000',
+            'payment.notes' => 'nullable|string|max:100',
+        ], [
+            'payment.reference.unique' => 'This payment reference already exists. Please use a different reference.',
         ]);
 
         // Get the lease and validate amount for edit

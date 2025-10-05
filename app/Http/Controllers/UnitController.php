@@ -28,10 +28,12 @@ class UnitController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $request->validateWithBag('unit', [
             'unit.code' => 'required|string|max:255|unique:units,code',
             'unit.status' => 'required|in:vacant,maintenance',
-            'unit.description' => 'nullable|string|max:1000',
+            'unit.description' => 'nullable|string|max:100',
+        ], [
+            'unit.code.unique' => 'This unit code already exists. Please choose a different code.',
         ]);
 
         Unit::create([
@@ -65,10 +67,12 @@ class UnitController extends Controller
      */
     public function update(Request $request, Unit $unit)
     {
-        $request->validate([
+        $request->validateWithBag('unit', [
             'unit.code' => 'required|string|max:255|unique:units,code,' . $unit->id,
             'unit.status' => 'required|in:vacant,maintenance',
-            'unit.description' => 'nullable|string|max:1000',
+            'unit.description' => 'nullable|string|max:100',
+        ], [
+            'unit.code.unique' => 'This unit code already exists. Please choose a different code.',
         ]);
 
         $unit->update([

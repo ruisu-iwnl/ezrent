@@ -13,11 +13,11 @@ class ExpenseController extends Controller
 {
     public function store(Request $request)
     {
-        $request->validate([
+        $request->validateWithBag('expense', [
             'expense.unit_id' => 'required|exists:units,id',
             'expense.lease_id' => 'nullable|exists:leases,id',
             'expense.category' => 'required|string|max:255',
-            'expense.description' => 'nullable|string|max:1000',
+            'expense.description' => 'nullable|string|max:100',
             'expense.amount' => 'required|numeric|min:0',
             'expense.incurred_at' => 'nullable|date',
             'expense.attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
