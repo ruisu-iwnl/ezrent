@@ -35,6 +35,7 @@ class DashboardStatsService
         $targetPercentage = $monthlyTarget > 0 ? round(($totalMonthlyRevenue / $monthlyTarget) * 100) : 0;
         
         $expenseStats = $this->calculateExpenseStats($expenses, $currentYear, $currentMonth);
+        $financialStats = $this->calculateFinancialStats($totalMonthlyRevenue, $expenseStats['monthlyExpenses'], $previousMonthRevenue, $expenseStats['previousMonthExpenses']);
         
         return [
             'totalMonthlyRevenue' => $totalMonthlyRevenue,
@@ -49,6 +50,10 @@ class DashboardStatsService
             'expensesComparisonText' => $expenseStats['expensesComparisonText'],
             'expensesBudget' => $expenseStats['expensesBudget'],
             'expensesBudgetPercentage' => $expenseStats['expensesBudgetPercentage'],
+            'netProfit' => $financialStats['netProfit'],
+            'profitMargin' => $financialStats['profitMargin'],
+            'profitComparisonText' => $financialStats['profitComparisonText'],
+            'previousMonthProfit' => $financialStats['previousMonthProfit'],
         ];
     }
     
@@ -120,6 +125,26 @@ class DashboardStatsService
             'expensesComparisonText' => $expensesComparisonText,
             'expensesBudget' => $expensesBudget,
             'expensesBudgetPercentage' => $expensesBudgetPercentage,
+            'previousMonthExpenses' => $previousMonthExpenses,
+        ];
+    }
+    
+    private function calculateFinancialStats($currentRevenue, $currentExpenses, $previousRevenue, $previousExpenses)
+    {
+        $netProfit = $currentRevenue - $currentExpenses;
+        $previousMonthProfit = $previousRevenue - $previousExpenses;
+        
+        $profitDifference = $netProfit - $previousMonthProfit;
+        $profitComparison = $profitDifference >= 0 ? '+' : '';
+        $profitComparisonText = $profitComparison . '₱' . number_format(abs($profitDifference), 2) . ' vs last month';
+        
+        $profitMargin = $currentRevenue > 0 ? round(($netProfit / $currentRevenue) * 100, 1) : 0;
+        
+        return [
+            'netProfit' => $netProfit,
+            'profitMargin' => $profitMargin,
+            'profitComparisonText' => $profitComparisonText,
+            'previousMonthProfit' => $previousMonthProfit,
         ];
     }
 }
