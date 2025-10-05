@@ -36,6 +36,7 @@
                     <th class="text-left px-4 py-3 font-medium">Address</th>
                     <th class="text-left px-4 py-3 font-medium">Status</th>
                     <th class="text-left px-4 py-3 font-medium">Current Unit</th>
+					<th class="text-left px-4 py-3 font-medium">Lease Period</th>
                     <th class="text-left px-4 py-3 font-medium">Rent Due</th>
                     <th class="text-left px-4 py-3 font-medium">Valid ID</th>
                     <th class="text-left px-4 py-3 font-medium">Notes</th>
@@ -73,6 +74,25 @@
                             <span class="text-gray-500 italic">No current unit</span>
                         @endif
                     </td>
+					<td class="px-4 py-3">
+						@if($tenant->lease)
+							@php
+								$start = \Carbon\Carbon::parse($tenant->lease->start_date);
+								$end = \Carbon\Carbon::parse($tenant->lease->end_date);
+							@endphp
+							@php $months = intval($start->diffInMonths($end)); @endphp
+							<div class="flex flex-col gap-0.5 leading-tight">
+								<span class="font-medium whitespace-nowrap" title="{{ $start->toFormattedDateString() }} → {{ $end->toFormattedDateString() }}">
+									{{ $start->format('M j, y') }} <span class="mx-1 text-gray-400">→</span> {{ $end->format('M j, y') }}
+								</span>
+								<span class="inline-flex w-fit items-center px-1.5 py-0.5 rounded text-[10px] bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300">
+									Duration: {{ $months }} {{ \Illuminate\Support\Str::plural('month', $months) }}
+								</span>
+							</div>
+						@else
+							<span class="text-gray-500 italic">—</span>
+						@endif
+					</td>
                     <td class="px-4 py-3 font-medium">
                         @if($tenant->lease)
                             @php
@@ -107,7 +127,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="9" class="px-4 py-8 text-center text-gray-500">No tenants found. Create your first tenant using the "Add Tenant & Assign" button above.</td>
+				<td colspan="10" class="px-4 py-8 text-center text-gray-500">No tenants found. Create your first tenant using the "Add Tenant & Assign" button above.</td>
                 </tr>
                 @endforelse
             </tbody>
