@@ -26,7 +26,7 @@ class TenantController extends Controller
             'tenant.notes' => 'nullable|string|max:1000',
             'lease.unit_id' => 'required|exists:units,id',
             'lease.start_date' => 'required|date',
-            'lease.end_date' => 'nullable|date|after:lease.start_date',
+            'lease.end_date' => 'nullable|date|after:lease.start_date|different:lease.start_date',
             'lease.monthly_rent' => 'required|numeric|min:0|max:99999999.99',
             'lease.security_deposit' => 'nullable|numeric|min:0|max:99999999.99',
             'lease.notes' => 'nullable|string|max:1000',

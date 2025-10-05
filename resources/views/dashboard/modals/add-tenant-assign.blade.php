@@ -68,7 +68,7 @@
                         <select name="lease[unit_id]" class="w-full rounded-md border-gray-300 dark:bg-gray-900 dark:border-gray-700 @error('lease.unit_id') border-red-500 @enderror" required>
                             <option value="">Choose a vacant unit…</option>
                             @foreach($units->where('status', 'vacant') as $unit)
-                                <option value="{{ $unit->id }}" {{ old('lease.unit_id') == $unit->id ? 'selected' : '' }}>{{ $unit->code }} - {{ $unit->description ?? 'No description' }}</option>
+                                <option value="{{ $unit->id }}" {{ old('lease.unit_id') == $unit->id ? 'selected' : '' }}>{{ $unit->code }} - {{ \Illuminate\Support\Str::limit($unit->description ?? 'No description', 40) }}</option>
                             @endforeach
                         </select>
                         @error('lease.unit_id')
