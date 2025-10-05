@@ -21,8 +21,6 @@
             <p style="margin:0 0 12px 0;">We’re excited to have you on board. Your account is ready — here’s what you can do right away:</p>
             <ul style="margin:0 0 16px 18px; padding:0;">
                 <li style="margin:0 0 6px 0;">View lease details and monthly rent</li>
-                <li style="margin:0 0 6px 0;">See payment history and upcoming dues</li>
-                <li style="margin:0 0 6px 0;">Submit maintenance requests</li>
                 <li style="margin:0 0 6px 0;">Update your contact information</li>
             </ul>
             <p style="margin:0 0 16px 0;">Your login details:</p>
