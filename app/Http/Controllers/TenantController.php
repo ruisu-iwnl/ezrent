@@ -18,7 +18,7 @@ class TenantController extends Controller
     {
         $request->validate([
             'user.name' => 'required|string|max:255',
-            'user.email' => 'required|email|unique:users,email',
+            'user.email' => 'required|email:rfc,dns|unique:users,email',
             'tenant.phone' => 'nullable|string|max:20',
             'tenant.date_of_birth' => 'nullable|date',
             'tenant.address' => 'nullable|string|max:500',

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Payment;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -34,7 +35,10 @@ class PaymentController extends Controller
             'payment.amount' => 'required|numeric|min:0',
             'payment.paid_at' => 'required|date',
             'payment.method' => 'required|string|max:255',
-            'payment.reference' => 'nullable|string|max:255',
+            'payment.reference' => [
+                'nullable','string','max:255',
+                Rule::unique('payments','reference'),
+            ],
             'payment.notes' => 'nullable|string|max:1000',
             'payment.receipt' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
@@ -93,7 +97,10 @@ class PaymentController extends Controller
         $request->validate([
             'payment.amount' => 'required|numeric|min:0',
             'payment.method' => 'required|string|max:255',
-            'payment.reference' => 'nullable|string|max:255',
+            'payment.reference' => [
+                'nullable','string','max:255',
+                Rule::unique('payments','reference')->ignore($payment->id),
+            ],
             'payment.notes' => 'nullable|string|max:1000',
         ]);
 
