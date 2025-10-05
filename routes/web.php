@@ -6,6 +6,7 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\FinancialReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -30,6 +31,8 @@ Route::middleware('auth')->group(function () {
     
     Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
     Route::put('/payments/{payment}', [PaymentController::class, 'update'])->name('payments.update');
+
+    Route::get('/financial-report', [FinancialReportController::class, 'index'])->name('financial-report.index');
 });
 
 require __DIR__.'/auth.php';
