@@ -63,8 +63,46 @@ class DashboardController extends Controller
 
     private function getTenantDashboard($user)
     {
-        $tenant = Tenant::where('user_id', $user->id)->with(['lease.unit'])->first();
-        return view('dashboard', compact('tenant'));
+        $tenant = Tenant::where('user_id', $user->id)
+            ->with(['lease.unit'])
+            ->first();
+
+        $lease = $tenant?->lease;
+        $payments = collect();
+        $recentPayment = null;
+        $monthlyRent = null;
+        $nextDueDate = null;
+        $currentMonthRemaining = null;
+
+        if ($lease) {
+            $payments = $lease->payments()->latest('paid_at')->take(6)->get();
+            $recentPayment = $lease->payments()->latest('paid_at')->first();
+            $monthlyRent = $lease->monthly_rent;
+
+            $startDay = optional($lease->start_date)->day ?? 1;
+            $today = now();
+            $daysInMonth = $today->daysInMonth;
+            $targetDay = min($startDay, $daysInMonth);
+            $candidate = $today->copy()->day($targetDay);
+            if ($candidate->lt($today->startOfDay())) {
+                $nextMonth = $today->copy()->addMonth();
+                $targetDay = min($startDay, $nextMonth->daysInMonth);
+                $candidate = $nextMonth->copy()->day($targetDay);
+            }
+            $nextDueDate = $candidate;
+
+            $currentMonthRemaining = $lease->getRemainingAmountForMonth($today->year, $today->month);
+        }
+
+        return view('dashboard', [
+            'tenant' => $tenant,
+            'lease' => $lease,
+            'payments' => $payments,
+            'monthlyRent' => $monthlyRent,
+            'nextDueDate' => $nextDueDate,
+            'currentMonthRemaining' => $currentMonthRemaining,
+            'recentPayment' => $recentPayment,
+        ]);
     }
 
     private function getBaseData(Request $request, $testDate = null)

@@ -39,6 +39,16 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/financial-report', [FinancialReportController::class, 'index'])->name('financial-report.index');
 
+    // Temporary maintenance request endpoint (mock wiring)
+    Route::post('/maintenance-requests', function () {
+        request()->validate([
+            'type' => 'required|string|max:255',
+            'preferred_time' => 'nullable|string|max:255',
+            'description' => 'required|string|max:2000',
+        ]);
+        return redirect()->route('dashboard')->with('success', 'Maintenance request submitted!');
+    })->name('maintenance-requests.store');
+
     // email test: visiting this link immediately sends a test email
     // Route::get('/test-email', function () {
     //     $name = 'Design Tester';

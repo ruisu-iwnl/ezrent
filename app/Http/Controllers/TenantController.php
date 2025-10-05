@@ -94,18 +94,23 @@ class TenantController extends Controller
     public function update(Request $request, Tenant $tenant)
     {
         $request->validate([
-            'tenant.phone' => 'nullable|string|max:20',
+            'tenant.phone' => ['nullable','regex:/^[0-9]+$/','max:20'],
             'tenant.address' => 'nullable|string|max:500',
             'tenant.status' => 'nullable|in:active,inactive,former',
             'tenant.notes' => 'nullable|string|max:1000',
         ]);
 
-        $tenant->update([
+        $updateData = [
             'phone' => $request->input('tenant.phone'),
             'address' => $request->input('tenant.address'),
-            'status' => $request->input('tenant.status'),
             'notes' => $request->input('tenant.notes'),
-        ]);
+        ];
+
+        if ($request->has('tenant.status')) {
+            $updateData['status'] = $request->input('tenant.status');
+        }
+
+        $tenant->update($updateData);
 
         return redirect()->route('dashboard')->with('success', 'Tenant updated successfully!');
     }
