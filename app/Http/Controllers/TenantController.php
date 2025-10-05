@@ -27,21 +27,18 @@ class TenantController extends Controller
             'lease.unit_id' => 'required|exists:units,id',
             'lease.start_date' => 'required|date',
             'lease.end_date' => 'nullable|date|after:lease.start_date',
-            'lease.monthly_rent' => 'required|numeric|min:0',
-            'lease.security_deposit' => 'nullable|numeric|min:0',
+            'lease.monthly_rent' => 'required|numeric|min:0|max:99999999.99',
+            'lease.security_deposit' => 'nullable|numeric|min:0|max:99999999.99',
             'lease.notes' => 'nullable|string|max:1000',
         ]);
 
-        // Extract last name from full name
         $fullName = $request->input('user.name');
         $nameParts = explode(' ', trim($fullName));
-        $lastName = end($nameParts); // Get the last part (last name)
+        $lastName = end($nameParts);
         
-        // Format lease start date as YYYYMMDD
         $startDate = \Carbon\Carbon::parse($request->input('lease.start_date'));
         $dateFormatted = $startDate->format('Ymd');
         
-        // Generate password: lastname + YYYYMMDD
         $generatedPassword = strtolower($lastName) . $dateFormatted;
 
         DB::transaction(function () use ($request, $generatedPassword) {
