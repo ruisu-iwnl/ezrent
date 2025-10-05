@@ -29,11 +29,13 @@ class TenantCredentialsMail extends Mailable
         $this->email = $email;
         $this->password = $password;
 
+        // Generate a one-time token stored server-side for direct login
         $token = Str::random(40);
         Cache::put('direct_login_' . $token, [
             'email' => $email,
         ], now()->addMinutes(30));
 
+        // Temporary signed URL containing only the token
         $this->loginUrl = URL::temporarySignedRoute('direct-login', now()->addMinutes(30), [
             'token' => $token,
         ]);
