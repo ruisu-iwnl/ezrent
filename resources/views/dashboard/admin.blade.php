@@ -13,7 +13,7 @@
 
     {{-- Development Helper: Date Override --}}
     @if(config('app.debug'))
-        <div class="bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700 rounded-lg p-4 mb-6">
+        <!-- <div class="bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700 rounded-lg p-4 mb-6">
             <div class="flex items-center justify-between">
                 <div>
                     <h4 class="font-medium">🛠️ Development Helper</h4>
@@ -37,7 +37,7 @@
                     <strong>Testing as:</strong> {{ $testDate->format('F j, Y') }} ({{ $testDate->format('Y-m') }})
                 </div>
             @endif
-        </div>
+        </div> -->
     @endif
 
     @include('dashboard.partials.stats-overview')
