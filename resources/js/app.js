@@ -19,6 +19,7 @@ Alpine.store('ui', {
     showExpense: false,
     editingRowId: null,
     editingTable: null,
+    selectedTenant: null,
 });
 
 initializeUnitEditing();

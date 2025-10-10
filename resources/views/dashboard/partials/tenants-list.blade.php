@@ -44,19 +44,20 @@
             </thead>
             <tbody>
                 @forelse($tenants as $tenant)
-                <tr class="border-t border-gray-200/60 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50" 
+                <tr class="border-t border-gray-200/60 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50 cursor-pointer"
                     x-data="{ tenant: {{ $tenant->toJson() }}, editing: false }"
+                    @click="if(!editing){ $store.ui.selectedTenant = tenant; $dispatch('open-modal', 'tenant-details'); }"
                     data-original-phone="{{ $tenant->phone }}"
                     data-original-address="{{ $tenant->address }}"
                     data-original-notes="{{ $tenant->notes }}">
                     <td class="px-4 py-3 font-medium">{{ $tenant->user->name }}</td>
                     <td class="px-4 py-3 text-gray-600 dark:text-gray-400">{{ $tenant->user->email }}</td>
                     <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
-                        <div x-show="!editing" @click="startEditingTenant(tenant.id); editing = true" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400">{{ $tenant->phone ?? 'Click to add phone' }}</div>
+                        <div x-show="!editing" @click.stop="startEditingTenant(tenant.id); editing = true" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400">{{ $tenant->phone ?? 'Click to add phone' }}</div>
                         <input x-show="editing" x-cloak x-model="tenant.phone" type="number" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" placeholder="Phone number" @click.stop>
                     </td>
                     <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
-                        <div x-show="!editing" @click="startEditingTenant(tenant.id); editing = true" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 truncate max-w-[4rem]" title="{{ $tenant->address }}">{{ $tenant->address ?? 'Click to add address' }}</div>
+                        <div x-show="!editing" @click.stop="startEditingTenant(tenant.id); editing = true" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 truncate max-w-[4rem]" title="{{ $tenant->address }}">{{ $tenant->address ?? 'Click to add address' }}</div>
                         <textarea x-show="editing" x-cloak x-model="tenant.address" rows="2" maxlength="100" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" placeholder="Address (max 100 chars)" @click.stop></textarea>
                     </td>
                     <td class="px-4 py-3">
@@ -121,7 +122,7 @@
                         @endif
                     </td>
                     <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
-                        <div x-show="!editing" @click="startEditingTenant(tenant.id); editing = true" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 truncate max-w-[4rem]" title="{{ $tenant->notes }}">{{ $tenant->notes ?? 'Click to add notes (max 100 chars)' }}</div>
+                        <div x-show="!editing" @click.stop="startEditingTenant(tenant.id); editing = true" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 truncate max-w-[4rem]" title="{{ $tenant->notes }}">{{ $tenant->notes ?? 'Click to add notes (max 100 chars)' }}</div>
                         <textarea x-show="editing" x-cloak x-model="tenant.notes" rows="2" maxlength="100" class="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600" placeholder="Notes (max 100 chars)" @click.stop></textarea>
                     </td>
                 </tr>
@@ -133,4 +134,49 @@
             </tbody>
         </table>
     </div>
+    
+    <x-modal name="tenant-details" :show="false" maxWidth="2xl">
+        <div class="p-4" x-data>
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold" x-text="$store.ui.selectedTenant?.user?.name || 'Tenant'"></h3>
+                    <p class="text-sm text-gray-500" x-text="$store.ui.selectedTenant?.user?.email || ''"></p>
+                </div>
+                <button class="text-gray-400 hover:text-gray-600" @click="$dispatch('close-modal', 'tenant-details')">✕</button>
+            </div>
+
+            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                <div>
+                    <div class="text-gray-500">Phone</div>
+                    <div class="font-medium" x-text="$store.ui.selectedTenant?.phone || '—'"></div>
+                </div>
+                <div>
+                    <div class="text-gray-500">Status</div>
+                    <div class="font-medium" x-text="$store.ui.selectedTenant?.status ? ($store.ui.selectedTenant.status[0].toUpperCase() + $store.ui.selectedTenant.status.slice(1)) : '—'"></div>
+                </div>
+                <div class="sm:col-span-2">
+                    <div class="text-gray-500">Address</div>
+                    <div class="font-medium break-words" x-text="$store.ui.selectedTenant?.address || '—'"></div>
+                </div>
+                <template x-if="$store.ui.selectedTenant?.lease">
+                    <div class="sm:col-span-2">
+                        <div class="text-gray-500">Current Unit</div>
+                        <div class="font-medium">
+                            <span x-text="$store.ui.selectedTenant?.lease?.unit?.code || ''"></span>
+                            <span class="text-gray-500" x-show="$store.ui.selectedTenant?.lease?.unit?.description"> — </span>
+                            <span class="text-gray-500" x-text="$store.ui.selectedTenant?.lease?.unit?.description || ''"></span>
+                        </div>
+                    </div>
+                </template>
+                <div class="sm:col-span-2">
+                    <div class="text-gray-500">Notes</div>
+                    <div class="font-medium break-words" x-text="$store.ui.selectedTenant?.notes || '—'"></div>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <x-secondary-button @click="$dispatch('close-modal', 'tenant-details')">Close</x-secondary-button>
+            </div>
+        </div>
+    </x-modal>
 </div>
