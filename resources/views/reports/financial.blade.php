@@ -77,10 +77,6 @@
                             <h3 class="compact-title font-semibold text-gray-900 dark:text-white mb-4">Financial Summary</h3>
                             <div class="space-y-2">
                                 <div class="flex justify-between">
-                                    <span class="compact-text text-gray-600 dark:text-gray-400">Starting Balance:</span>
-                                    <span class="compact-text font-medium text-gray-900 dark:text-white">₱0.00</span>
-                                </div>
-                                <div class="flex justify-between">
                                     <span class="compact-text text-gray-600 dark:text-gray-400">Total Revenue:</span>
                                     <span class="compact-text font-medium text-green-600 dark:text-green-400">₱{{ number_format($stats['totalMonthlyRevenue'], 2) }}</span>
                                 </div>
@@ -122,13 +118,10 @@
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date and Time</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Description</th>
                                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount (PHP)</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Balance (PHP)</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            @php $runningBalance = 0; @endphp
                             @forelse($monthlyPayments as $payment)
-                                @php $runningBalance += $payment->amount; @endphp
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                                     <td class="px-6 py-4 whitespace-nowrap compact-text text-gray-900 dark:text-white">
                                         {{ $payment->paid_at->format('M j, g:i A') }}
@@ -148,13 +141,10 @@
                                     <td class="px-6 py-4 whitespace-nowrap compact-text font-bold text-green-600 dark:text-green-400 text-right">
                                         ₱{{ number_format($payment->amount, 2) }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap compact-text font-medium text-gray-900 dark:text-white text-right">
-                                        ₱{{ number_format($runningBalance, 2) }}
-                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="px-6 py-8 text-center compact-text text-gray-500 dark:text-gray-400">
+                                    <td colspan="3" class="px-6 py-8 text-center compact-text text-gray-500 dark:text-gray-400">
                                         No revenue transactions recorded for this month
                                     </td>
                                 </tr>
@@ -176,13 +166,10 @@
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date and Time</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Description</th>
                                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount (PHP)</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Balance (PHP)</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            @php $runningBalance = $stats['totalMonthlyRevenue']; @endphp
                             @forelse($monthlyExpenses as $expense)
-                                @php $runningBalance -= $expense->amount; @endphp
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                                     <td class="px-6 py-4 whitespace-nowrap compact-text text-gray-900 dark:text-white">
                                         {{ $expense->incurred_at->format('M j, g:i A') }}
@@ -202,13 +189,10 @@
                                     <td class="px-6 py-4 whitespace-nowrap compact-text font-bold text-red-600 dark:text-red-400 text-right">
                                         -₱{{ number_format($expense->amount, 2) }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap compact-text font-medium text-gray-900 dark:text-white text-right">
-                                        ₱{{ number_format($runningBalance, 2) }}
-                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="px-6 py-8 text-center compact-text text-gray-500 dark:text-gray-400">
+                                    <td colspan="3" class="px-6 py-8 text-center compact-text text-gray-500 dark:text-gray-400">
                                         No expense transactions recorded for this month
                                     </td>
                                 </tr>
