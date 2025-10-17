@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Financial Report - {{ $currentMonth }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logos/logo2.png') }}"> 
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
