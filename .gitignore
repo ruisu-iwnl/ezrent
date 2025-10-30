@@ -26,3 +26,5 @@ Thumbs.db
 *.temp
 *.cache
 tinker_history.txt
+
+!.ebextensions
